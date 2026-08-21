@@ -61,7 +61,7 @@ Field teams often work where connectivity is unreliable. Inspection records must
 git clone https://github.com/eav-labs-dev/eav-field-mobile.git
 cd eav-field-mobile
 git checkout dev
-npm install
+npm ci
 cp .env.example .env
 npm start
 ```

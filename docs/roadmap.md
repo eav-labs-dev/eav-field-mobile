@@ -6,6 +6,7 @@
 - [x] Add demo sign-in, dashboard, inspections, sync, and settings screens.
 - [x] Add shared design tokens and initial unit coverage.
 - [x] Add GitHub Actions checks.
+- [x] Lock dependency resolution and use reproducible CI installs.
 
 ## Offline inspection workflow
 
