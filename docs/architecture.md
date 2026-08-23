@@ -37,6 +37,8 @@ The root layout opens `eav-field.db` through Expo's `SQLiteProvider`. The provid
 
 The first migration creates `inspection_drafts`, which stores serialized answers, completion progress, synchronization state, retry metadata, errors, and timestamps. Repository writes use bound parameters. A synchronization index supports ordered lookup of drafts that still require processing.
 
+The dynamic `app/inspections/[id]` route loads any existing draft after the database is ready. Field changes update local form state immediately and trigger a 600 ms debounced write. The UI reports loading, saving, saved, and error states without making network availability part of the save path.
+
 ## Offline data flow
 
 1. An assigned inspection is downloaded and stored locally.

@@ -12,9 +12,9 @@
 
 - [x] Add SQLite schema and migrations.
 - [x] Add the bound-parameter inspection draft repository.
-- [ ] Add inspection detail route.
-- [ ] Build multi-section inspection form.
-- [ ] Save and recover drafts automatically.
+- [x] Add inspection detail route.
+- [x] Build multi-section inspection form.
+- [x] Save and recover drafts automatically.
 - [ ] Add photo attachment placeholder.
 
 ## Synchronization
