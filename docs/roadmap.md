@@ -15,7 +15,7 @@
 - [x] Add inspection detail route.
 - [x] Build multi-section inspection form.
 - [x] Save and recover drafts automatically.
-- [ ] Add photo attachment placeholder.
+- [x] Add camera and photo-library attachments to offline drafts.
 
 ## Synchronization
 

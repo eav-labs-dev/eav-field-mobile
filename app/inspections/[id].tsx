@@ -4,9 +4,10 @@
  */
 
 import { router, useLocalSearchParams } from 'expo-router';
+import * as ImagePicker from 'expo-image-picker';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { createDraftRepository } from '@/src/features/inspections/draft-repository';
@@ -18,6 +19,7 @@ import {
   type SiteCondition,
 } from '@/src/features/inspections/inspection-form';
 import { mockInspections } from '@/src/features/inspections/mock-inspections';
+import { createPhotoAttachment } from '@/src/features/inspections/photo-attachment';
 import { colors, radius, spacing } from '@/src/shared/theme/tokens';
 
 type SaveState = 'loading' | 'ready' | 'saving' | 'saved' | 'error';
@@ -96,6 +98,42 @@ export default function InspectionDetailScreen() {
     editVersion.current += 1;
     setAnswers((current) => ({ ...current, ...update }));
     setIsDirty(true);
+  };
+
+  const addPhoto = async (source: 'camera' | 'library') => {
+    if (!inspection) return;
+
+    try {
+      if (source === 'camera') {
+        const permission = await ImagePicker.requestCameraPermissionsAsync();
+        if (!permission.granted) {
+          Alert.alert('Camera permission required', 'Allow camera access to document this inspection.');
+          return;
+        }
+      }
+
+      const result =
+        source === 'camera'
+          ? await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.7 })
+          : await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.7 });
+
+      if (result.canceled || !result.assets[0]) return;
+
+      const now = new Date().toISOString();
+      const asset = result.assets[0];
+      updateAnswers({
+        photos: [
+          ...answers.photos,
+          createPhotoAttachment(asset, source, `${inspection.id}-${Date.now()}`, now),
+        ],
+      });
+    } catch {
+      Alert.alert('Photo unavailable', 'The photo could not be attached. Your other draft changes are safe.');
+    }
+  };
+
+  const removePhoto = (photoId: string) => {
+    updateAnswers({ photos: answers.photos.filter((photo) => photo.id !== photoId) });
   };
 
   if (!inspection) {
@@ -219,6 +257,55 @@ export default function InspectionDetailScreen() {
           />
         </View>
 
+        <View style={styles.sectionCard} testID="inspection-form-photos-section">
+          <Text style={styles.sectionEyebrow}>SECTION 3</Text>
+          <Text style={styles.sectionTitle}>Photo evidence</Text>
+          <Text style={styles.photoHint}>
+            Attach site photos now. They remain part of this offline draft until the upload milestone is connected.
+          </Text>
+          <View style={styles.choiceRow}>
+            <Pressable
+              onPress={() => void addPhoto('camera')}
+              style={styles.secondaryButton}
+              testID="inspection-form-take-photo-button"
+            >
+              <Text style={styles.secondaryButtonText}>Take photo</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => void addPhoto('library')}
+              style={styles.secondaryButton}
+              testID="inspection-form-choose-photo-button"
+            >
+              <Text style={styles.secondaryButtonText}>Choose photo</Text>
+            </Pressable>
+          </View>
+          {answers.photos.length === 0 ? (
+            <Text style={styles.emptyPhotos}>No photos attached.</Text>
+          ) : (
+            answers.photos.map((photo, index) => (
+              <View key={photo.id} style={styles.photoRow} testID={`inspection-photo-${index}`}>
+                <Image source={{ uri: photo.uri }} style={styles.photoPreview} />
+                <View style={styles.photoDetails}>
+                  <Text numberOfLines={1} style={styles.photoName}>
+                    {photo.fileName ?? `Inspection photo ${index + 1}`}
+                  </Text>
+                  <Text style={styles.photoMeta}>
+                    {photo.source === 'camera' ? 'Camera' : 'Library'} · {photo.width} × {photo.height}
+                  </Text>
+                </View>
+                <Pressable
+                  accessibilityLabel={`Remove photo ${index + 1}`}
+                  onPress={() => removePhoto(photo.id)}
+                  style={styles.removeButton}
+                  testID={`inspection-photo-remove-${index}-button`}
+                >
+                  <Text style={styles.removeButtonText}>Remove</Text>
+                </Pressable>
+              </View>
+            ))
+          )}
+        </View>
+
         <Text style={styles.offlineNote}>
           Changes stay on this device and are saved automatically. Upload will be added in the synchronization milestone.
         </Text>
@@ -253,6 +340,17 @@ const styles = StyleSheet.create({
   choiceSelected: { backgroundColor: colors.primary, borderColor: colors.primary },
   choiceText: { color: colors.text, fontSize: 14, fontWeight: '700' },
   choiceSelectedText: { color: '#FFFFFF', fontSize: 14, fontWeight: '800' },
+  photoHint: { color: colors.textMuted, fontSize: 13, lineHeight: 19 },
+  secondaryButton: { alignItems: 'center', borderColor: colors.primary, borderRadius: radius.sm, borderWidth: 1, justifyContent: 'center', minHeight: 44, paddingHorizontal: 14 },
+  secondaryButtonText: { color: colors.primary, fontSize: 14, fontWeight: '800' },
+  emptyPhotos: { color: colors.textMuted, fontSize: 13 },
+  photoRow: { alignItems: 'center', borderColor: colors.border, borderRadius: radius.sm, borderWidth: 1, flexDirection: 'row', gap: spacing.sm, padding: spacing.sm },
+  photoPreview: { backgroundColor: colors.background, borderRadius: radius.sm, height: 64, width: 64 },
+  photoDetails: { flex: 1, gap: 4 },
+  photoName: { color: colors.text, fontSize: 13, fontWeight: '800' },
+  photoMeta: { color: colors.textMuted, fontSize: 11 },
+  removeButton: { justifyContent: 'center', minHeight: 40, paddingHorizontal: spacing.sm },
+  removeButtonText: { color: colors.danger, fontSize: 12, fontWeight: '800' },
   offlineNote: { color: colors.textMuted, fontSize: 12, lineHeight: 18, textAlign: 'center' },
   notFound: { flex: 1, gap: spacing.lg, justifyContent: 'center', padding: spacing.lg },
   notFoundTitle: { color: colors.text, fontSize: 25, fontWeight: '800' },

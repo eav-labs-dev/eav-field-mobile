@@ -4,11 +4,23 @@
 
 export type SiteCondition = 'good' | 'fair' | 'poor' | '';
 
+export type PhotoAttachment = {
+  id: string;
+  uri: string;
+  fileName: string | null;
+  mimeType: string | null;
+  width: number;
+  height: number;
+  source: 'camera' | 'library';
+  addedAt: string;
+};
+
 export type InspectionFormAnswers = {
   contactName: string;
   safetyBriefingCompleted: boolean | null;
   siteCondition: SiteCondition;
   notes: string;
+  photos: PhotoAttachment[];
 };
 
 export const emptyInspectionForm: InspectionFormAnswers = {
@@ -16,10 +28,27 @@ export const emptyInspectionForm: InspectionFormAnswers = {
   safetyBriefingCompleted: null,
   siteCondition: '',
   notes: '',
+  photos: [],
 };
 
 const isSiteCondition = (value: unknown): value is SiteCondition =>
   value === '' || value === 'good' || value === 'fair' || value === 'poor';
+
+const isPhotoAttachment = (value: unknown): value is PhotoAttachment => {
+  if (!value || typeof value !== 'object') return false;
+
+  const photo = value as Record<string, unknown>;
+  return (
+    typeof photo.id === 'string' &&
+    typeof photo.uri === 'string' &&
+    (typeof photo.fileName === 'string' || photo.fileName === null) &&
+    (typeof photo.mimeType === 'string' || photo.mimeType === null) &&
+    typeof photo.width === 'number' &&
+    typeof photo.height === 'number' &&
+    (photo.source === 'camera' || photo.source === 'library') &&
+    typeof photo.addedAt === 'string'
+  );
+};
 
 /**
  * Safely converts persisted JSON data into form answers.
@@ -37,6 +66,7 @@ export const normalizeInspectionForm = (value: unknown): InspectionFormAnswers =
         : null,
     siteCondition: isSiteCondition(answers.siteCondition) ? answers.siteCondition : '',
     notes: typeof answers.notes === 'string' ? answers.notes : '',
+    photos: Array.isArray(answers.photos) ? answers.photos.filter(isPhotoAttachment) : [],
   };
 };
 
