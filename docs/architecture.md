@@ -28,7 +28,7 @@ Expo SQLite                 Remote API
 
 - `src/features/auth` owns local session state and future authentication adapters.
 - `src/features/inspections` owns inspection types, lists, forms, validation, and persistence.
-- A future `src/features/sync` module will own the upload queue, retries, and conflict reporting.
+- `src/features/sync` owns the upload queue state machine and retry rules. Future adapters will add transport and conflict reporting.
 - `src/shared` contains components and tokens that have no feature-specific business rules.
 
 ## Local database
@@ -40,6 +40,8 @@ The first migration creates `inspection_drafts`, which stores serialized answers
 The dynamic `app/inspections/[id]` route loads any existing draft after the database is ready. Field changes update local form state immediately and trigger a 600 ms debounced write. The UI reports loading, saving, saved, and error states without making network availability part of the save path.
 
 Expo ImagePicker provides camera and photo-library selection. The form converts picker assets into a small, validated metadata record inside the same serialized draft, so attachments are recovered with the rest of the answers. Picker failures and denied camera permission do not interrupt other offline edits. The upload milestone will own transfer, retry, and server identifiers; this slice deliberately keeps attachment and upload responsibilities separate.
+
+The upload queue uses guarded `draft → pending → syncing → synced` transitions. A transport error moves only a `syncing` record to `failed`, increments its retry count, and retains the last error. A user retry returns `failed` to `pending`. Invalid or skipped transitions are rejected, and synced snapshots are retained locally instead of being deleted automatically.
 
 ## Offline data flow
 
