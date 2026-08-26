@@ -6,7 +6,7 @@ Expo React Native application for field inspections, offline reporting, and reli
 
 EAV Field is under active development as part of the EAV Labs portfolio. The current foundation includes the main navigation, demo sign-in, field officer dashboard, assignment list, sync centre, settings screen, shared design tokens, mock domain data, and initial CI coverage.
 
-API synchronization and authentication integration are the next implementation milestones.
+Authentication integration and durable photo transfer are the next implementation milestones.
 
 ## Problem
 
@@ -24,6 +24,7 @@ Field teams often work where connectivity is unreliable. Inspection records must
 - Debounced draft autosave, recovery, and completion progress
 - Camera and photo-library attachments stored with offline drafts
 - Explicit upload queue with guarded transitions, failure metadata, and manual retry
+- Centralized API client and manual JSON inspection upload adapter
 - Profile and device settings summary
 - Shared TypeScript domain models and design tokens
 - Unit test for inspection summaries
@@ -31,8 +32,8 @@ Field teams often work where connectivity is unreliable. Inspection records must
 
 ## Remaining MVP
 
-- API client and TanStack Query integration
 - Authentication integration
+- Durable photo upload and conflict handling
 - Device screenshots and demo walkthrough
 
 ## Stack
@@ -82,6 +83,7 @@ npm run check
 | Variable | Purpose | Default |
 |---|---|---|
 | `EXPO_PUBLIC_API_URL` | Backend base URL used by the future sync client | `http://localhost:8000` |
+| `EXPO_PUBLIC_API_TIMEOUT_MS` | Maximum API request duration in milliseconds | `15000` |
 | `EXPO_PUBLIC_DEMO_MODE` | Enables portfolio demo data | `true` |
 
 Do not place secrets in `EXPO_PUBLIC_*` variables. Expo exposes those values to the application bundle.
@@ -100,6 +102,7 @@ docs/                        Architecture, roadmap, and project notes
 
 - [Project brief](docs/project-brief.md)
 - [Architecture](docs/architecture.md)
+- [API synchronization contract](docs/api-sync.md)
 - [Roadmap](docs/roadmap.md)
 
 ## What this project demonstrates
