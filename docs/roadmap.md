@@ -19,6 +19,7 @@
 
 ## Synchronization
 
+- [x] Add API-backed authentication and secure native session restoration.
 - [x] Add centralized API client and normalized response errors.
 - [x] Add the manual JSON inspection upload adapter.
 - [ ] Add assignment download and durable photo-upload adapters.

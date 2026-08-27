@@ -29,12 +29,17 @@ export class ApiClientError extends Error {
 }
 
 export type ApiClient = {
-  request: <T>(path: string, init?: RequestInit) => Promise<T>;
+  request: <T>(path: string, init?: RequestInit, options?: ApiRequestOptions) => Promise<T>;
+};
+
+type ApiRequestOptions = {
+  authenticated?: boolean;
 };
 
 type ApiClientOptions = {
   baseUrl: string;
   fetcher?: Fetcher;
+  getAccessToken?: () => Promise<string | null>;
   timeoutMs?: number;
 };
 
@@ -53,22 +58,30 @@ const parseEnvelope = async <T>(response: Response): Promise<ApiEnvelope<T> | nu
 export const createApiClient = ({
   baseUrl,
   fetcher = fetch,
+  getAccessToken,
   timeoutMs = 15_000,
 }: ApiClientOptions): ApiClient => {
   const normalizedBaseUrl = baseUrl.replace(/\/+$/, '');
   if (!normalizedBaseUrl) throw new Error('An API base URL is required.');
 
   return {
-    request: async <T>(path: string, init: RequestInit = {}): Promise<T> => {
+    request: async <T>(
+      path: string,
+      init: RequestInit = {},
+      options: ApiRequestOptions = {},
+    ): Promise<T> => {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
       try {
+        const accessToken =
+          options.authenticated === false || !getAccessToken ? null : await getAccessToken();
         const response = await fetcher(`${normalizedBaseUrl}/${path.replace(/^\/+/, '')}`, {
           ...init,
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
+            ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
             ...init.headers,
           },
           signal: controller.signal,

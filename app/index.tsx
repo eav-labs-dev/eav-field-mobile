@@ -1,10 +1,13 @@
 /**
  * @fileoverview Entry route for the EAV Field application.
- * @remarks Authentication is mocked during the portfolio foundation milestone.
+ * @remarks Restored sessions enter the app without exposing persisted credentials.
  */
 
 import { Redirect } from 'expo-router';
 
+import { useSessionStore } from '@/src/features/auth/session-store';
+
 export default function IndexRoute() {
-  return <Redirect href="/(auth)/login" />;
+  const isAuthenticated = useSessionStore((state) => state.isAuthenticated);
+  return <Redirect href={isAuthenticated ? '/(tabs)' : '/(auth)/login'} />;
 }

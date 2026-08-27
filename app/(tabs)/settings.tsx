@@ -14,8 +14,8 @@ export default function SettingsScreen() {
   const displayName = useSessionStore((state) => state.displayName);
   const signOut = useSessionStore((state) => state.signOut);
 
-  const handleSignOut = () => {
-    signOut();
+  const handleSignOut = async () => {
+    await signOut();
     router.replace('/(auth)/login');
   };
 
@@ -38,7 +38,7 @@ export default function SettingsScreen() {
           <Text style={styles.detailLabel}>API environment</Text>
           <Text style={styles.detailValue}>Portfolio demo</Text>
         </View>
-        <Pressable onPress={handleSignOut} style={styles.signOutButton} testID="settings-sign-out-button">
+        <Pressable onPress={() => void handleSignOut()} style={styles.signOutButton} testID="settings-sign-out-button">
           <Text style={styles.signOutText}>Sign out</Text>
         </Pressable>
       </View>
