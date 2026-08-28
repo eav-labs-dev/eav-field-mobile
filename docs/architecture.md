@@ -43,6 +43,8 @@ Expo ImagePicker provides camera and photo-library selection. The form converts 
 
 The upload queue uses guarded `draft → pending → syncing → synced` transitions. A transport error moves only a `syncing` record to `failed`, increments its retry count, and retains the last error. A user retry returns `failed` to `pending`. Invalid or skipped transitions are rejected, and synced snapshots are retained locally instead of being deleted automatically.
 
+Database initialization also recovers records left in `syncing` when the app process was interrupted. Those records return to `pending`, retain an interruption message, and increment their retry count before another explicit sync run can claim them. This prevents an operating-system stop or crash from leaving work permanently stranded.
+
 The shared API client normalizes the configured base URL, JSON headers, request timeout, EAV response envelope, and safe error messages. The inspection upload adapter owns endpoint and payload mapping, while the queue processor owns local state transitions. The Sync centre invokes that processor through a TanStack Query mutation, processes pending drafts sequentially, and refreshes SQLite state when the run finishes. See [the synchronization contract](api-sync.md).
 
 ## Offline data flow

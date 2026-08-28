@@ -24,6 +24,7 @@
 - [x] Add the manual JSON inspection upload adapter.
 - [ ] Add assignment download and durable photo-upload adapters.
 - [x] Add explicit queue transitions, failure metadata, and manual retry.
+- [x] Recover interrupted in-flight uploads during database initialization.
 - [ ] Add conflict reporting.
 - [ ] Add connectivity-aware background synchronization.
 
