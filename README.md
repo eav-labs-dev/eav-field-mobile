@@ -30,6 +30,7 @@ Field teams often work where connectivity is unreliable. Inspection records must
 - Shared TypeScript domain models and design tokens
 - Unit test for inspection summaries
 - GitHub Actions type-check and test workflow
+- Validated Expo configuration and EAS preview/production build profiles
 
 ## Remaining MVP
 
@@ -77,6 +78,7 @@ Use the Expo terminal options to open Android, iOS, or web.
 npm run typecheck
 npm run test
 npm run check
+npm run config:check
 ```
 
 ## Environment
@@ -105,6 +107,7 @@ docs/                        Architecture, roadmap, and project notes
 - [Architecture](docs/architecture.md)
 - [API synchronization contract](docs/api-sync.md)
 - [Authentication contract](docs/authentication.md)
+- [Release and demo builds](docs/release.md)
 - [Roadmap](docs/roadmap.md)
 
 ## What this project demonstrates

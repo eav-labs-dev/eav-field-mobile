@@ -10,12 +10,14 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "dev.eavlabs.field",
+      "buildNumber": "1",
       "config": {
         "usesNonExemptEncryption": false
       }
     },
     "android": {
       "package": "dev.eavlabs.field",
+      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#E9F4EE"
       },

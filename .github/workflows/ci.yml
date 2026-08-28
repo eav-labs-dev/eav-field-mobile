@@ -23,5 +23,7 @@ jobs:
         run: npm ci
       - name: Type-check
         run: npm run typecheck
+      - name: Validate Expo and EAS configuration
+        run: npm run config:check > /dev/null
       - name: Test
         run: npm run test

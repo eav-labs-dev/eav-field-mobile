@@ -1,0 +1,13 @@
+.git/
+.github/
+.expo/
+coverage/
+dist/
+docs/
+node_modules/
+web-build/
+.env
+.env.local
+npm-debug.log*
+*.md
+!README.md

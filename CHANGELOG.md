@@ -12,6 +12,7 @@
 - Added a persisted upload queue, guarded synchronization transitions, visible failure metadata, and manual retry behavior.
 - Added a centralized API client, documented response contract, TanStack Query mutation, and sequential JSON inspection upload processing.
 - Added API-backed sign-in, secure native session restoration, protected application routes, sign-out cleanup, and bearer authentication for API requests.
+- Added validated Expo identifiers, EAS preview and production profiles, CI release preflight, and a maintainer release guide.
 
 ## 0.1.0 - Portfolio Rebuild Started
 

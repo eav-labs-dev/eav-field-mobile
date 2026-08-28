@@ -69,3 +69,7 @@ The shared API client normalizes the configured base URL, JSON headers, request 
 - Component tests cover forms, status messages, and user actions.
 - Integration tests cover SQLite repositories and queue transitions.
 - A later Maestro flow will cover the primary offline inspection journey.
+
+## Delivery boundary
+
+EAS configuration defines internal preview and store-oriented production profiles. CI validates both the raw release contract and Expo's resolved public configuration without requiring signing credentials. Remote builds and store submissions remain maintainer-controlled operations. See [the release guide](release.md).
