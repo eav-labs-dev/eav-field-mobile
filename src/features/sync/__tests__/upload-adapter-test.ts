@@ -1,6 +1,18 @@
 import type { InspectionDraft } from '@/src/features/inspections/draft-repository';
 import type { ApiClient } from '@/src/shared/api/api-client';
+import type { PhotoUploadAdapter } from '../photo-upload-adapter';
 import { createInspectionUploadAdapter, serializeInspectionDraft } from '../upload-adapter';
+
+const photo = {
+  id: 'photo-1',
+  uri: 'file:///private/device/photo.jpg',
+  fileName: 'photo.jpg',
+  mimeType: 'image/jpeg',
+  width: 1200,
+  height: 900,
+  source: 'camera' as const,
+  addedAt: '2026-08-26T08:00:00.000Z',
+};
 
 const draft: InspectionDraft = {
   inspectionId: 'inspection/003',
@@ -9,18 +21,7 @@ const draft: InspectionDraft = {
     safetyBriefingCompleted: true,
     siteCondition: 'good',
     notes: 'Complete',
-    photos: [
-      {
-        id: 'photo-1',
-        uri: 'file:///private/device/photo.jpg',
-        fileName: 'photo.jpg',
-        mimeType: 'image/jpeg',
-        width: 1200,
-        height: 900,
-        source: 'camera',
-        addedAt: '2026-08-26T08:00:00.000Z',
-      },
-    ],
+    photos: [photo],
   },
   progress: 100,
   syncStatus: 'pending',
@@ -43,13 +44,30 @@ describe('inspection upload adapter', () => {
       submissionId: 'submission-1',
       receivedAt: '2026-08-26T08:01:00.000Z',
     });
-    const adapter = createInspectionUploadAdapter({ request } as ApiClient);
+    const photoAdapter = {
+      upload: jest.fn().mockResolvedValue({
+        attachmentId: 'attachment-1',
+        uploadedAt: '2026-08-26T08:00:30.000Z',
+      }),
+    } satisfies PhotoUploadAdapter;
+    const adapter = createInspectionUploadAdapter({ request } as ApiClient, photoAdapter);
 
     await adapter.upload(draft);
 
+    expect(photoAdapter.upload).toHaveBeenCalledWith('inspection/003', photo);
     expect(request).toHaveBeenCalledWith('/api/v1/inspections/inspection%2F003/submissions', {
       method: 'POST',
-      body: JSON.stringify(serializeInspectionDraft(draft)),
+      body: JSON.stringify(
+        serializeInspectionDraft(
+          draft,
+          new Map([
+            [
+              'photo-1',
+              { attachmentId: 'attachment-1', uploadedAt: '2026-08-26T08:00:30.000Z' },
+            ],
+          ]),
+        ),
+      ),
     });
   });
 });
