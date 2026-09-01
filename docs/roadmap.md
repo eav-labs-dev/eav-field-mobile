@@ -34,5 +34,5 @@
 - [ ] Add component and persistence integration tests.
 - [ ] Capture Android and iOS screenshots.
 - [ ] Add demo walkthrough.
-- [ ] Document deployment and EAS build configuration.
+- [x] Validate Expo configuration and document EAS preview and production builds.
 - [ ] Promote the tested MVP from `dev` to `main`.

@@ -8,6 +8,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "config:check": "node scripts/validate-release-config.mjs && expo config --type public --json",
     "typecheck": "tsc --noEmit",
     "test": "jest --ci",
     "check": "npm run typecheck && npm run test"
