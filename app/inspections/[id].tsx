@@ -20,6 +20,7 @@ import {
 } from '@/src/features/inspections/inspection-form';
 import { mockInspections } from '@/src/features/inspections/mock-inspections';
 import { createPhotoAttachment } from '@/src/features/inspections/photo-attachment';
+import { deletePersistedPhoto, persistPhotoAsset } from '@/src/features/inspections/photo-storage';
 import { colors, radius, spacing } from '@/src/shared/theme/tokens';
 
 type SaveState = 'loading' | 'ready' | 'saving' | 'saved' | 'error';
@@ -127,10 +128,12 @@ export default function InspectionDetailScreen() {
 
       const now = new Date().toISOString();
       const asset = result.assets[0];
+      const photoId = `${inspection.id}-${Date.now()}`;
+      const persistedAsset = await persistPhotoAsset(asset, photoId);
       updateAnswers({
         photos: [
           ...answers.photos,
-          createPhotoAttachment(asset, source, `${inspection.id}-${Date.now()}`, now),
+          createPhotoAttachment(persistedAsset, source, photoId, now),
         ],
       });
     } catch {
@@ -139,7 +142,9 @@ export default function InspectionDetailScreen() {
   };
 
   const removePhoto = (photoId: string) => {
-    updateAnswers({ photos: answers.photos.filter((photo) => photo.id !== photoId) });
+    const photo = answers.photos.find((item) => item.id === photoId);
+    if (photo) deletePersistedPhoto(photo.uri);
+    updateAnswers({ photos: answers.photos.filter((item) => item.id !== photoId) });
   };
 
   const queueForUpload = async () => {
@@ -279,7 +284,7 @@ export default function InspectionDetailScreen() {
           <Text style={styles.sectionEyebrow}>SECTION 3</Text>
           <Text style={styles.sectionTitle}>Photo evidence</Text>
           <Text style={styles.photoHint}>
-            Attach site photos now. They remain part of this offline draft until the upload milestone is connected.
+            Attached photos are stored on this device and uploaded with the completed inspection.
           </Text>
           <View style={styles.choiceRow}>
             <Pressable
