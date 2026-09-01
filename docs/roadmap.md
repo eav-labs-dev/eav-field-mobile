@@ -10,7 +10,8 @@
 
 ## Offline inspection workflow
 
-- [ ] Add SQLite schema and migrations.
+- [x] Add SQLite schema and migrations.
+- [x] Add the bound-parameter inspection draft repository.
 - [ ] Add inspection detail route.
 - [ ] Build multi-section inspection form.
 - [ ] Save and recover drafts automatically.

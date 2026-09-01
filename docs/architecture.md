@@ -31,6 +31,12 @@ Expo SQLite                 Remote API
 - A future `src/features/sync` module will own the upload queue, retries, and conflict reporting.
 - `src/shared` contains components and tokens that have no feature-specific business rules.
 
+## Local database
+
+The root layout opens `eav-field.db` through Expo's `SQLiteProvider`. The provider runs ordered migrations before rendering application routes. SQLite `user_version` records the applied schema version.
+
+The first migration creates `inspection_drafts`, which stores serialized answers, completion progress, synchronization state, retry metadata, errors, and timestamps. Repository writes use bound parameters. A synchronization index supports ordered lookup of drafts that still require processing.
+
 ## Offline data flow
 
 1. An assigned inspection is downloaded and stored locally.
