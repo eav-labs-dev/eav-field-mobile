@@ -7,6 +7,7 @@
 - Added shared design tokens, mock inspection data, unit coverage, and CI configuration.
 - Added a committed npm lockfile and switched CI and setup guidance to reproducible `npm ci` installs.
 - Added the versioned SQLite draft schema, database provider, repository, and unit coverage.
+- Added inspection details, a two-section form, completion progress, and debounced offline autosave.
 
 ## 0.1.0 - Portfolio Rebuild Started
 

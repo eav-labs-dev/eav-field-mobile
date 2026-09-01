@@ -54,7 +54,11 @@ export default function DashboardScreen() {
         </View>
 
         {mockInspections.slice(0, 2).map((inspection) => (
-          <InspectionCard inspection={inspection} key={inspection.id} />
+          <InspectionCard
+            inspection={inspection}
+            key={inspection.id}
+            onPress={() => router.push({ pathname: '/inspections/[id]', params: { id: inspection.id } })}
+          />
         ))}
       </ScrollView>
     </SafeAreaView>

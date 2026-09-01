@@ -2,6 +2,7 @@
  * @fileoverview Searchable list of assigned field inspections.
  */
 
+import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -34,7 +35,11 @@ export default function InspectionsScreen() {
           value={query}
         />
         {inspections.map((inspection) => (
-          <InspectionCard inspection={inspection} key={inspection.id} />
+          <InspectionCard
+            inspection={inspection}
+            key={inspection.id}
+            onPress={() => router.push({ pathname: '/inspections/[id]', params: { id: inspection.id } })}
+          />
         ))}
       </ScrollView>
     </SafeAreaView>
