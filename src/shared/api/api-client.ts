@@ -76,11 +76,12 @@ export const createApiClient = ({
       try {
         const accessToken =
           options.authenticated === false || !getAccessToken ? null : await getAccessToken();
+        const isMultipartBody = typeof FormData !== 'undefined' && init.body instanceof FormData;
         const response = await fetcher(`${normalizedBaseUrl}/${path.replace(/^\/+/, '')}`, {
           ...init,
           headers: {
             Accept: 'application/json',
-            'Content-Type': 'application/json',
+            ...(isMultipartBody ? {} : { 'Content-Type': 'application/json' }),
             ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
             ...init.headers,
           },

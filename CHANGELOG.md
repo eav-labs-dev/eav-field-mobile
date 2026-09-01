@@ -12,6 +12,7 @@
 - Added a persisted upload queue, guarded synchronization transitions, visible failure metadata, and manual retry behavior.
 - Added a centralized API client, documented response contract, TanStack Query mutation, and sequential JSON inspection upload processing.
 - Added API-backed sign-in, secure native session restoration, protected application routes, sign-out cleanup, and bearer authentication for API requests.
+- Added durable photo storage, authenticated multipart transfer, idempotent attachment keys, and server attachment references in inspection submissions.
 
 ## 0.1.0 - Portfolio Rebuild Started
 
