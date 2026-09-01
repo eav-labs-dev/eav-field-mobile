@@ -68,4 +68,44 @@ describe('createDraftRepository', () => {
     await expect(repository.save({ ...draft, progress: 101 })).rejects.toThrow(RangeError);
     expect(database.runAsync).not.toHaveBeenCalled();
   });
+
+  test('queues only a local draft and clears stale retry metadata', async () => {
+    const database = createDatabase();
+    const repository = createDraftRepository(database);
+
+    await expect(
+      repository.queueForUpload(draft.inspectionId, '2026-08-25T08:00:00.000Z'),
+    ).resolves.toBe(true);
+    expect(database.runAsync).toHaveBeenCalledWith(
+      expect.stringContaining("sync_status = 'pending'"),
+      '2026-08-25T08:00:00.000Z',
+      draft.inspectionId,
+    );
+  });
+
+  test('records failures and keeps retry transitions explicit', async () => {
+    const database = createDatabase();
+    const repository = createDraftRepository(database);
+
+    await repository.markFailed(
+      draft.inspectionId,
+      'Network request timed out.',
+      '2026-08-25T08:05:00.000Z',
+    );
+    await repository.retry(draft.inspectionId, '2026-08-25T08:06:00.000Z');
+
+    expect(database.runAsync).toHaveBeenNthCalledWith(
+      1,
+      expect.stringContaining('retry_count = retry_count + 1'),
+      'Network request timed out.',
+      '2026-08-25T08:05:00.000Z',
+      draft.inspectionId,
+    );
+    expect(database.runAsync).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining("sync_status = 'pending'"),
+      '2026-08-25T08:06:00.000Z',
+      draft.inspectionId,
+    );
+  });
 });

@@ -21,7 +21,7 @@
 
 - [ ] Add centralized API client.
 - [ ] Add download and upload adapters.
-- [ ] Add queue retry states.
+- [x] Add explicit queue transitions, failure metadata, and manual retry.
 - [ ] Add conflict reporting.
 - [ ] Add connectivity-aware background synchronization.
 

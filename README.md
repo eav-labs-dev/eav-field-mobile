@@ -6,7 +6,7 @@ Expo React Native application for field inspections, offline reporting, and reli
 
 EAV Field is under active development as part of the EAV Labs portfolio. The current foundation includes the main navigation, demo sign-in, field officer dashboard, assignment list, sync centre, settings screen, shared design tokens, mock domain data, and initial CI coverage.
 
-Explicit upload queue behavior and API synchronization are the next implementation milestones.
+API synchronization and authentication integration are the next implementation milestones.
 
 ## Problem
 
@@ -23,6 +23,7 @@ Field teams often work where connectivity is unreliable. Inspection records must
 - Inspection detail route with a two-section offline form
 - Debounced draft autosave, recovery, and completion progress
 - Camera and photo-library attachments stored with offline drafts
+- Explicit upload queue with guarded transitions, failure metadata, and manual retry
 - Profile and device settings summary
 - Shared TypeScript domain models and design tokens
 - Unit test for inspection summaries
@@ -30,7 +31,6 @@ Field teams often work where connectivity is unreliable. Inspection records must
 
 ## Remaining MVP
 
-- Explicit upload queue and retry states
 - API client and TanStack Query integration
 - Authentication integration
 - Device screenshots and demo walkthrough

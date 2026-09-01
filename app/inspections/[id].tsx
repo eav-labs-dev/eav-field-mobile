@@ -23,6 +23,7 @@ import { createPhotoAttachment } from '@/src/features/inspections/photo-attachme
 import { colors, radius, spacing } from '@/src/shared/theme/tokens';
 
 type SaveState = 'loading' | 'ready' | 'saving' | 'saved' | 'error';
+type QueueState = 'idle' | 'queueing' | 'queued' | 'error';
 
 const conditionOptions: Array<{ label: string; value: Exclude<SiteCondition, ''> }> = [
   { label: 'Good', value: 'good' },
@@ -37,6 +38,7 @@ export default function InspectionDetailScreen() {
   const inspection = mockInspections.find((item) => item.id === id);
   const [answers, setAnswers] = useState<InspectionFormAnswers>(emptyInspectionForm);
   const [saveState, setSaveState] = useState<SaveState>('loading');
+  const [queueState, setQueueState] = useState<QueueState>('idle');
   const [isDirty, setIsDirty] = useState(false);
   const createdAt = useRef(new Date().toISOString());
   const editVersion = useRef(0);
@@ -53,6 +55,9 @@ export default function InspectionDetailScreen() {
         if (draft) {
           createdAt.current = draft.createdAt;
           setAnswers(normalizeInspectionForm(draft.answers));
+          if (draft.syncStatus === 'pending' || draft.syncStatus === 'syncing') {
+            setQueueState('queued');
+          }
         }
         setSaveState('ready');
       })
@@ -98,6 +103,7 @@ export default function InspectionDetailScreen() {
     editVersion.current += 1;
     setAnswers((current) => ({ ...current, ...update }));
     setIsDirty(true);
+    setQueueState('idle');
   };
 
   const addPhoto = async (source: 'camera' | 'library') => {
@@ -134,6 +140,18 @@ export default function InspectionDetailScreen() {
 
   const removePhoto = (photoId: string) => {
     updateAnswers({ photos: answers.photos.filter((photo) => photo.id !== photoId) });
+  };
+
+  const queueForUpload = async () => {
+    if (!inspection || progress < 100 || isDirty) return;
+
+    setQueueState('queueing');
+    try {
+      const queued = await repository.queueForUpload(inspection.id, new Date().toISOString());
+      setQueueState(queued ? 'queued' : 'error');
+    } catch {
+      setQueueState('error');
+    }
   };
 
   if (!inspection) {
@@ -306,6 +324,28 @@ export default function InspectionDetailScreen() {
           )}
         </View>
 
+        <Pressable
+          disabled={progress < 100 || isDirty || queueState === 'queueing' || queueState === 'queued'}
+          onPress={() => void queueForUpload()}
+          style={[
+            styles.primaryButton,
+            (progress < 100 || isDirty || queueState === 'queued') && styles.buttonDisabled,
+          ]}
+          testID="inspection-form-queue-upload-button"
+        >
+          <Text style={styles.primaryButtonText}>
+            {queueState === 'queueing' ? 'Adding to queue…' : null}
+            {queueState === 'queued' ? 'Queued for upload' : null}
+            {queueState === 'idle' || queueState === 'error' ? 'Queue for upload' : null}
+          </Text>
+        </Pressable>
+        {progress < 100 ? (
+          <Text style={styles.queueHint}>Complete all four inspection fields before queueing.</Text>
+        ) : null}
+        {queueState === 'error' ? (
+          <Text style={styles.errorText}>The draft could not be queued. Confirm it has finished saving.</Text>
+        ) : null}
+
         <Text style={styles.offlineNote}>
           Changes stay on this device and are saved automatically. Upload will be added in the synchronization milestone.
         </Text>
@@ -356,4 +396,6 @@ const styles = StyleSheet.create({
   notFoundTitle: { color: colors.text, fontSize: 25, fontWeight: '800' },
   primaryButton: { alignItems: 'center', backgroundColor: colors.primary, borderRadius: radius.sm, justifyContent: 'center', minHeight: 48 },
   primaryButtonText: { color: '#FFFFFF', fontSize: 15, fontWeight: '800' },
+  buttonDisabled: { opacity: 0.45 },
+  queueHint: { color: colors.textMuted, fontSize: 12, textAlign: 'center' },
 });
