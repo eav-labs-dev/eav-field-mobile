@@ -10,6 +10,7 @@
 - Added inspection details, a two-section form, completion progress, and debounced offline autosave.
 - Added camera and photo-library attachments with permission handling, draft recovery, previews, removal, and unit coverage.
 - Added a persisted upload queue, guarded synchronization transitions, visible failure metadata, and manual retry behavior.
+- Added a centralized API client, documented response contract, TanStack Query mutation, and sequential JSON inspection upload processing.
 
 ## 0.1.0 - Portfolio Rebuild Started
 

@@ -19,8 +19,9 @@
 
 ## Synchronization
 
-- [ ] Add centralized API client.
-- [ ] Add download and upload adapters.
+- [x] Add centralized API client and normalized response errors.
+- [x] Add the manual JSON inspection upload adapter.
+- [ ] Add assignment download and durable photo-upload adapters.
 - [x] Add explicit queue transitions, failure metadata, and manual retry.
 - [ ] Add conflict reporting.
 - [ ] Add connectivity-aware background synchronization.

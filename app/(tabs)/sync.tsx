@@ -5,6 +5,7 @@
 
 import { useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
+import { useMutation } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,6 +15,9 @@ import {
   type InspectionDraft,
 } from '@/src/features/inspections/draft-repository';
 import { mockInspections } from '@/src/features/inspections/mock-inspections';
+import { processUploadQueue, type UploadQueueSummary } from '@/src/features/sync/process-upload-queue';
+import { createInspectionUploadAdapter } from '@/src/features/sync/upload-adapter';
+import { apiClient } from '@/src/shared/api/client';
 import { ScreenHeader } from '@/src/shared/components/screen-header';
 import { colors, radius, spacing } from '@/src/shared/theme/tokens';
 
@@ -28,8 +32,10 @@ const statusLabels = {
 export default function SyncScreen() {
   const database = useSQLiteContext();
   const repository = useMemo(() => createDraftRepository(database), [database]);
+  const uploadAdapter = useMemo(() => createInspectionUploadAdapter(apiClient), []);
   const [drafts, setDrafts] = useState<InspectionDraft[]>([]);
   const [loadState, setLoadState] = useState<LoadState>('loading');
+  const [lastSummary, setLastSummary] = useState<UploadQueueSummary | null>(null);
 
   const loadQueue = useCallback(async () => {
     setLoadState('loading');
@@ -46,6 +52,12 @@ export default function SyncScreen() {
       void loadQueue();
     }, [loadQueue]),
   );
+
+  const uploadMutation = useMutation({
+    mutationFn: () => processUploadQueue(repository, uploadAdapter),
+    onSuccess: setLastSummary,
+    onSettled: () => void loadQueue(),
+  });
 
   const retry = async (inspectionId: string) => {
     await repository.retry(inspectionId, new Date().toISOString());
@@ -64,9 +76,15 @@ export default function SyncScreen() {
               : `${drafts.length} upload${drafts.length === 1 ? '' : 's'} waiting`}
           </Text>
           <Text style={styles.statusText}>
-            Queue and retry states are active. Network upload will be connected in the API milestone.
+            Uploads use the configured API and remain local when the server cannot be reached.
           </Text>
         </View>
+
+        {lastSummary ? (
+          <Text style={styles.summaryText} testID="sync-last-result-text">
+            Last run: {lastSummary.synced} uploaded · {lastSummary.failed} failed
+          </Text>
+        ) : null}
 
         {loadState === 'loading' ? <Text style={styles.emptyText}>Loading local queue…</Text> : null}
         {loadState === 'error' ? (
@@ -109,8 +127,22 @@ export default function SyncScreen() {
           );
         })}
 
-        <Pressable onPress={() => void loadQueue()} style={styles.button} testID="sync-refresh-button">
-          <Text style={styles.buttonText}>Refresh queue</Text>
+        <Pressable
+          disabled={uploadMutation.isPending || !drafts.some((draft) => draft.syncStatus === 'pending')}
+          onPress={() => uploadMutation.mutate()}
+          style={[
+            styles.button,
+            (uploadMutation.isPending || !drafts.some((draft) => draft.syncStatus === 'pending')) &&
+              styles.buttonDisabled,
+          ]}
+          testID="sync-now-button"
+        >
+          <Text style={styles.buttonText}>
+            {uploadMutation.isPending ? 'Uploading…' : 'Sync now'}
+          </Text>
+        </Pressable>
+        <Pressable onPress={() => void loadQueue()} style={styles.refreshButton} testID="sync-refresh-button">
+          <Text style={styles.refreshButtonText}>Refresh queue</Text>
         </Pressable>
       </ScrollView>
     </SafeAreaView>
@@ -124,6 +156,7 @@ const styles = StyleSheet.create({
   statusLabel: { color: '#7EE2A8', fontSize: 12, fontWeight: '800', letterSpacing: 1.4 },
   statusTitle: { color: '#FFFFFF', fontSize: 22, fontWeight: '800' },
   statusText: { color: '#D7E8DF', fontSize: 14, lineHeight: 20 },
+  summaryText: { color: colors.primary, fontSize: 13, fontWeight: '800', textAlign: 'center' },
   queueCard: { backgroundColor: colors.surface, borderColor: colors.border, borderRadius: radius.md, borderWidth: 1, gap: spacing.sm, padding: spacing.md },
   queueHeader: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing.sm, justifyContent: 'space-between' },
   queueTitle: { color: colors.text, flex: 1, fontSize: 15, fontWeight: '800' },
@@ -136,4 +169,7 @@ const styles = StyleSheet.create({
   retryButtonText: { color: colors.danger, fontSize: 13, fontWeight: '800' },
   button: { alignItems: 'center', backgroundColor: colors.accent, borderRadius: radius.sm, minHeight: 48, justifyContent: 'center' },
   buttonText: { color: colors.text, fontSize: 15, fontWeight: '800' },
+  buttonDisabled: { opacity: 0.45 },
+  refreshButton: { alignItems: 'center', justifyContent: 'center', minHeight: 42 },
+  refreshButtonText: { color: colors.primary, fontSize: 13, fontWeight: '800' },
 });
