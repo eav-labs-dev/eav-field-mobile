@@ -25,6 +25,7 @@
 - [x] Add durable local photo storage and binary upload adapters.
 - [ ] Add assignment downloads.
 - [x] Add explicit queue transitions, failure metadata, and manual retry.
+- [x] Recover interrupted in-flight uploads during database initialization.
 - [ ] Add conflict reporting.
 - [ ] Add connectivity-aware background synchronization.
 

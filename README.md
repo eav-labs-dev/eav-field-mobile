@@ -25,6 +25,7 @@ Field teams often work where connectivity is unreliable. Inspection records must
 - Debounced draft autosave, recovery, and completion progress
 - Camera and photo-library attachments copied into durable device storage
 - Explicit upload queue with guarded transitions, failure metadata, and manual retry
+- Startup recovery for uploads interrupted while in progress
 - Centralized API client with authenticated JSON and multipart photo uploads
 - Profile and device settings summary
 - Shared TypeScript domain models and design tokens
