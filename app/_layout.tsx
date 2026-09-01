@@ -12,7 +12,7 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { useSessionStore } from '@/src/features/auth/session-store';
-import { migrateDatabase } from '@/src/shared/database/migrations';
+import { initializeDatabase } from '@/src/shared/database/migrations';
 import { colors } from '@/src/shared/theme/tokens';
 
 export default function RootLayout() {
@@ -36,7 +36,7 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <SQLiteProvider databaseName="eav-field.db" onInit={migrateDatabase}>
+      <SQLiteProvider databaseName="eav-field.db" onInit={initializeDatabase}>
         <QueryClientProvider client={queryClient}>
           <StatusBar style="dark" />
           <Stack screenOptions={{ headerShown: false }}>

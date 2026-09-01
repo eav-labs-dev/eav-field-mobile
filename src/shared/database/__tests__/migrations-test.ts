@@ -4,12 +4,18 @@
 
 import type { SQLiteDatabase } from 'expo-sqlite';
 
-import { DATABASE_VERSION, migrateDatabase } from '../migrations';
+import {
+  DATABASE_VERSION,
+  initializeDatabase,
+  INTERRUPTED_UPLOAD_MESSAGE,
+  migrateDatabase,
+} from '../migrations';
 
 const createDatabase = (version: number) =>
   ({
     execAsync: jest.fn().mockResolvedValue(undefined),
     getFirstAsync: jest.fn().mockResolvedValue({ user_version: version }),
+    runAsync: jest.fn().mockResolvedValue({ changes: 0, lastInsertRowId: 0 }),
   }) as unknown as SQLiteDatabase;
 
 describe('migrateDatabase', () => {
@@ -41,5 +47,20 @@ describe('migrateDatabase', () => {
     const database = createDatabase(DATABASE_VERSION + 1);
 
     await expect(migrateDatabase(database)).rejects.toThrow('newer than supported');
+  });
+
+  test('returns interrupted uploads to pending after migrations complete', async () => {
+    const database = createDatabase(DATABASE_VERSION);
+
+    await initializeDatabase(database);
+
+    expect(database.runAsync).toHaveBeenCalledWith(
+      expect.stringContaining("sync_status = 'pending'"),
+      INTERRUPTED_UPLOAD_MESSAGE,
+    );
+    expect(database.runAsync).toHaveBeenCalledWith(
+      expect.stringContaining("WHERE sync_status = 'syncing'"),
+      INTERRUPTED_UPLOAD_MESSAGE,
+    );
   });
 });

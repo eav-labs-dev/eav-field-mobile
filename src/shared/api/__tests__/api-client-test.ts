@@ -66,6 +66,19 @@ describe('createApiClient', () => {
     expect(getAccessToken).toHaveBeenCalledTimes(1);
   });
 
+  test('lets the runtime set the multipart boundary for form data', async () => {
+    const fetcher = jest.fn().mockResolvedValue(
+      response({ success: true, code: 'OK', message: 'Uploaded', data: null }),
+    );
+    const client = createApiClient({ baseUrl: 'https://api.example.com', fetcher });
+    const body = new FormData();
+    body.append('photoId', 'photo-1');
+
+    await client.request('/attachments', { body, method: 'POST' });
+
+    expect(fetcher.mock.calls[0][1].headers).not.toHaveProperty('Content-Type');
+  });
+
   test('normalizes fetch failures without exposing implementation details', async () => {
     const client = createApiClient({
       baseUrl: 'https://api.example.com',

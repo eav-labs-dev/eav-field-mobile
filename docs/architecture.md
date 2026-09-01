@@ -39,9 +39,13 @@ The first migration creates `inspection_drafts`, which stores serialized answers
 
 The dynamic `app/inspections/[id]` route loads any existing draft after the database is ready. Field changes update local form state immediately and trigger a 600 ms debounced write. The UI reports loading, saving, saved, and error states without making network availability part of the save path.
 
-Expo ImagePicker provides camera and photo-library selection. The form converts picker assets into a small, validated metadata record inside the same serialized draft, so attachments are recovered with the rest of the answers. Picker failures and denied camera permission do not interrupt other offline edits. The upload milestone will own transfer, retry, and server identifiers; this slice deliberately keeps attachment and upload responsibilities separate.
+Expo ImagePicker provides camera and photo-library selection. Picker assets are copied from temporary cache locations into the app document directory before the durable URI and validated metadata enter the draft. Picker failures and denied camera permission do not interrupt other offline edits. Removing a photo deletes the app-owned file.
+
+During synchronization, photo files are uploaded first through authenticated multipart requests. Each upload uses its stable local photo ID as an idempotency key. The final inspection submission references the returned attachment IDs and never serializes a device-local URI.
 
 The upload queue uses guarded `draft → pending → syncing → synced` transitions. A transport error moves only a `syncing` record to `failed`, increments its retry count, and retains the last error. A user retry returns `failed` to `pending`. Invalid or skipped transitions are rejected, and synced snapshots are retained locally instead of being deleted automatically.
+
+Database initialization also recovers records left in `syncing` when the app process was interrupted. Those records return to `pending`, retain an interruption message, and increment their retry count before another explicit sync run can claim them. This prevents an operating-system stop or crash from leaving work permanently stranded.
 
 The shared API client normalizes the configured base URL, JSON headers, request timeout, EAV response envelope, and safe error messages. The inspection upload adapter owns endpoint and payload mapping, while the queue processor owns local state transitions. The Sync centre invokes that processor through a TanStack Query mutation, processes pending drafts sequentially, and refreshes SQLite state when the run finishes. See [the synchronization contract](api-sync.md).
 
