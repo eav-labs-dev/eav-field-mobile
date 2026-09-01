@@ -26,7 +26,7 @@ Expo SQLite                 Remote API
 
 ## Feature boundaries
 
-- `src/features/auth` owns local session state and future authentication adapters.
+- `src/features/auth` owns the authentication adapter, session state, and secure persistence boundary.
 - `src/features/inspections` owns inspection types, lists, forms, validation, and persistence.
 - `src/features/sync` owns the upload queue state machine and retry rules. Future adapters will add transport and conflict reporting.
 - `src/shared` contains components and tokens that have no feature-specific business rules.
@@ -57,7 +57,9 @@ The shared API client normalizes the configured base URL, JSON headers, request 
 ## Security boundaries
 
 - Public Expo environment variables contain configuration only, never secrets.
-- Authentication tokens will use platform-secure storage rather than SQLite.
+- Authentication tokens use Expo SecureStore on native devices rather than SQLite. Web sessions remain memory-only.
+- The API client reads the stored token for each protected request and sends it as a bearer token. The login request explicitly skips authentication.
+- Passwords exist only in the sign-in form and login request body; they are never written to device storage.
 - SQL statements use bound parameters.
 - Photo URIs and metadata remain local until an authenticated upload succeeds. Picker cache files are not treated as durable server storage.
 

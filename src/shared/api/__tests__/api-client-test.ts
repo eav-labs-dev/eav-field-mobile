@@ -45,6 +45,27 @@ describe('createApiClient', () => {
     });
   });
 
+  test('adds the stored bearer token only to authenticated requests', async () => {
+    const fetcher = jest.fn().mockResolvedValue(
+      response({ success: true, code: 'OK', message: 'Accepted', data: null }),
+    );
+    const getAccessToken = jest.fn().mockResolvedValue('secure-token');
+    const client = createApiClient({
+      baseUrl: 'https://api.example.com',
+      fetcher,
+      getAccessToken,
+    });
+
+    await client.request('/protected');
+    await client.request('/api/v1/auth/login', { method: 'POST' }, { authenticated: false });
+
+    expect(fetcher.mock.calls[0][1]).toEqual(
+      expect.objectContaining({ headers: expect.objectContaining({ Authorization: 'Bearer secure-token' }) }),
+    );
+    expect(fetcher.mock.calls[1][1].headers).not.toHaveProperty('Authorization');
+    expect(getAccessToken).toHaveBeenCalledTimes(1);
+  });
+
   test('normalizes fetch failures without exposing implementation details', async () => {
     const client = createApiClient({
       baseUrl: 'https://api.example.com',

@@ -1,5 +1,5 @@
 /**
- * @fileoverview Demo sign-in screen for field officers.
+ * @fileoverview API-backed sign-in screen for field officers.
  */
 
 import { router } from 'expo-router';
@@ -12,12 +12,13 @@ import { colors, radius, spacing } from '@/src/shared/theme/tokens';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('ama.mensah@demo.eavlabs.dev');
-  const [password, setPassword] = useState('demo-password');
+  const [password, setPassword] = useState('');
+  const errorMessage = useSessionStore((state) => state.errorMessage);
+  const isSigningIn = useSessionStore((state) => state.isSigningIn);
   const signIn = useSessionStore((state) => state.signIn);
 
-  const handleSignIn = () => {
-    signIn('Ama Mensah');
-    router.replace('/(tabs)');
+  const handleSignIn = async () => {
+    if (await signIn(email, password)) router.replace('/(tabs)');
   };
 
   return (
@@ -56,14 +57,21 @@ export default function LoginScreen() {
           </View>
           <Pressable
             accessibilityRole="button"
-            disabled={!email || !password}
-            onPress={handleSignIn}
+            disabled={!email || !password || isSigningIn}
+            onPress={() => void handleSignIn()}
             style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
             testID="auth-login-submit-button"
           >
-            <Text style={styles.buttonText}>Continue to assignments</Text>
+            <Text style={styles.buttonText}>
+              {isSigningIn ? 'Signing in…' : 'Continue to assignments'}
+            </Text>
           </Pressable>
-          <Text style={styles.demoNote}>Portfolio demo account. No live credentials are required.</Text>
+          {errorMessage ? (
+            <Text accessibilityRole="alert" style={styles.error} testID="auth-login-error-message">
+              {errorMessage}
+            </Text>
+          ) : null}
+          <Text style={styles.demoNote}>Use the field-officer account configured by the API.</Text>
         </View>
       </View>
     </SafeAreaView>
@@ -84,4 +92,5 @@ const styles = StyleSheet.create({
   buttonPressed: { backgroundColor: colors.primaryStrong },
   buttonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '800' },
   demoNote: { color: colors.textMuted, fontSize: 12, lineHeight: 18, textAlign: 'center' },
+  error: { color: colors.danger, fontSize: 13, lineHeight: 19, textAlign: 'center' },
 });

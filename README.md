@@ -4,9 +4,9 @@ Expo React Native application for field inspections, offline reporting, and reli
 
 ## Project status
 
-EAV Field is under active development as part of the EAV Labs portfolio. The current foundation includes the main navigation, demo sign-in, field officer dashboard, assignment list, sync centre, settings screen, shared design tokens, mock domain data, and initial CI coverage.
+EAV Field is under active development as part of the EAV Labs portfolio. The current foundation includes API-backed sign-in, secure native session storage, the main navigation, field officer dashboard, assignment list, sync centre, settings screen, shared design tokens, mock domain data, and CI coverage.
 
-Authentication integration and durable photo transfer are the next implementation milestones.
+Durable photo transfer and conflict reporting are the next implementation milestones.
 
 ## Problem
 
@@ -15,7 +15,8 @@ Field teams often work where connectivity is unreliable. Inspection records must
 ## Current features
 
 - Expo Router navigation
-- Demo field-officer sign-in
+- API-backed field-officer sign-in and restored native sessions
+- SecureStore token persistence, protected routes, and authenticated API headers
 - Assignment dashboard and workload summary
 - Searchable inspection list
 - Offline-draft and synchronization status interface
@@ -32,7 +33,6 @@ Field teams often work where connectivity is unreliable. Inspection records must
 
 ## Remaining MVP
 
-- Authentication integration
 - Durable photo upload and conflict handling
 - Device screenshots and demo walkthrough
 
@@ -44,6 +44,7 @@ Field teams often work where connectivity is unreliable. Inspection records must
 - Expo Router
 - Expo SQLite
 - Expo ImagePicker
+- Expo SecureStore
 - TanStack Query
 - Zustand
 - Jest with `jest-expo`
@@ -103,6 +104,7 @@ docs/                        Architecture, roadmap, and project notes
 - [Project brief](docs/project-brief.md)
 - [Architecture](docs/architecture.md)
 - [API synchronization contract](docs/api-sync.md)
+- [Authentication contract](docs/authentication.md)
 - [Roadmap](docs/roadmap.md)
 
 ## What this project demonstrates
