@@ -5,7 +5,9 @@
 
 import type { SQLiteDatabase } from 'expo-sqlite';
 
-export type DraftSyncStatus = 'draft' | 'pending' | 'syncing' | 'failed' | 'synced';
+import type { DraftSyncStatus } from '@/src/features/sync/queue-state';
+
+export type { DraftSyncStatus } from '@/src/features/sync/queue-state';
 
 export type InspectionDraft = {
   inspectionId: string;
@@ -90,11 +92,75 @@ export const createDraftRepository = (database: SQLiteDatabase) => ({
   listPending: async (): Promise<InspectionDraft[]> => {
     const rows = await database.getAllAsync<InspectionDraftRow>(
       `SELECT * FROM inspection_drafts
-       WHERE sync_status IN ('draft', 'pending', 'failed')
+       WHERE sync_status IN ('pending', 'syncing', 'failed')
        ORDER BY updated_at ASC`,
     );
 
     return rows.map(mapDraftRow);
+  },
+
+  /** Adds a completed local draft to the upload queue. */
+  queueForUpload: async (inspectionId: string, updatedAt: string): Promise<boolean> => {
+    const result = await database.runAsync(
+      `UPDATE inspection_drafts
+       SET sync_status = 'pending', retry_count = 0, last_error = NULL, updated_at = ?
+       WHERE inspection_id = ? AND sync_status = 'draft'`,
+      updatedAt,
+      inspectionId,
+    );
+    return result.changes === 1;
+  },
+
+  /** Marks a pending upload as in progress. */
+  markSyncing: async (inspectionId: string, updatedAt: string): Promise<boolean> => {
+    const result = await database.runAsync(
+      `UPDATE inspection_drafts SET sync_status = 'syncing', updated_at = ?
+       WHERE inspection_id = ? AND sync_status = 'pending'`,
+      updatedAt,
+      inspectionId,
+    );
+    return result.changes === 1;
+  },
+
+  /** Records a successful upload without deleting its local audit snapshot. */
+  markSynced: async (inspectionId: string, updatedAt: string): Promise<boolean> => {
+    const result = await database.runAsync(
+      `UPDATE inspection_drafts SET sync_status = 'synced', last_error = NULL, updated_at = ?
+       WHERE inspection_id = ? AND sync_status = 'syncing'`,
+      updatedAt,
+      inspectionId,
+    );
+    return result.changes === 1;
+  },
+
+  /** Records an upload failure and increments its retry counter. */
+  markFailed: async (
+    inspectionId: string,
+    lastError: string,
+    updatedAt: string,
+  ): Promise<boolean> => {
+    const result = await database.runAsync(
+      `UPDATE inspection_drafts
+       SET sync_status = 'failed', retry_count = retry_count + 1,
+           last_error = ?, updated_at = ?
+       WHERE inspection_id = ? AND sync_status = 'syncing'`,
+      lastError,
+      updatedAt,
+      inspectionId,
+    );
+    return result.changes === 1;
+  },
+
+  /** Returns a failed upload to pending without hiding its retry count. */
+  retry: async (inspectionId: string, updatedAt: string): Promise<boolean> => {
+    const result = await database.runAsync(
+      `UPDATE inspection_drafts
+       SET sync_status = 'pending', last_error = NULL, updated_at = ?
+       WHERE inspection_id = ? AND sync_status = 'failed'`,
+      updatedAt,
+      inspectionId,
+    );
+    return result.changes === 1;
   },
 
   /**

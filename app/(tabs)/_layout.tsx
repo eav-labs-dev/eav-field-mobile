@@ -2,11 +2,15 @@
  * @fileoverview Primary tab navigation for field operations.
  */
 
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 
+import { useSessionStore } from '@/src/features/auth/session-store';
 import { colors } from '@/src/shared/theme/tokens';
 
 export default function TabsLayout() {
+  const isAuthenticated = useSessionStore((state) => state.isAuthenticated);
+  if (!isAuthenticated) return <Redirect href="/(auth)/login" />;
+
   return (
     <Tabs
       screenOptions={{

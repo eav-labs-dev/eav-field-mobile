@@ -12,16 +12,19 @@
 
 - [x] Add SQLite schema and migrations.
 - [x] Add the bound-parameter inspection draft repository.
-- [ ] Add inspection detail route.
-- [ ] Build multi-section inspection form.
-- [ ] Save and recover drafts automatically.
-- [ ] Add photo attachment placeholder.
+- [x] Add inspection detail route.
+- [x] Build multi-section inspection form.
+- [x] Save and recover drafts automatically.
+- [x] Add camera and photo-library attachments to offline drafts.
 
 ## Synchronization
 
-- [ ] Add centralized API client.
-- [ ] Add download and upload adapters.
-- [ ] Add queue retry states.
+- [x] Add API-backed authentication and secure native session restoration.
+- [x] Add centralized API client and normalized response errors.
+- [x] Add the manual JSON inspection upload adapter.
+- [x] Add durable local photo storage and binary upload adapters.
+- [ ] Add assignment downloads.
+- [x] Add explicit queue transitions, failure metadata, and manual retry.
 - [ ] Add conflict reporting.
 - [ ] Add connectivity-aware background synchronization.
 
