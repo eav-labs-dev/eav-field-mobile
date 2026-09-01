@@ -23,10 +23,10 @@ Field teams often work where connectivity is unreliable. Inspection records must
 - Versioned SQLite schema and bound-parameter draft repository
 - Inspection detail route with a two-section offline form
 - Debounced draft autosave, recovery, and completion progress
-- Camera and photo-library attachments stored with offline drafts
+- Camera and photo-library attachments copied into durable device storage
 - Explicit upload queue with guarded transitions, failure metadata, and manual retry
 - Startup recovery for uploads interrupted while in progress
-- Centralized API client and manual JSON inspection upload adapter
+- Centralized API client with authenticated JSON and multipart photo uploads
 - Profile and device settings summary
 - Shared TypeScript domain models and design tokens
 - Unit test for inspection summaries
@@ -34,7 +34,7 @@ Field teams often work where connectivity is unreliable. Inspection records must
 
 ## Remaining MVP
 
-- Durable photo upload and conflict handling
+- Assignment downloads and conflict handling
 - Device screenshots and demo walkthrough
 
 ## Stack
@@ -45,6 +45,7 @@ Field teams often work where connectivity is unreliable. Inspection records must
 - Expo Router
 - Expo SQLite
 - Expo ImagePicker
+- Expo FileSystem
 - Expo SecureStore
 - TanStack Query
 - Zustand
