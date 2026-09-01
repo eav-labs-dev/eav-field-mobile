@@ -39,6 +39,8 @@ The first migration creates `inspection_drafts`, which stores serialized answers
 
 The dynamic `app/inspections/[id]` route loads any existing draft after the database is ready. Field changes update local form state immediately and trigger a 600 ms debounced write. The UI reports loading, saving, saved, and error states without making network availability part of the save path.
 
+Expo ImagePicker provides camera and photo-library selection. The form converts picker assets into a small, validated metadata record inside the same serialized draft, so attachments are recovered with the rest of the answers. Picker failures and denied camera permission do not interrupt other offline edits. The upload milestone will own transfer, retry, and server identifiers; this slice deliberately keeps attachment and upload responsibilities separate.
+
 ## Offline data flow
 
 1. An assigned inspection is downloaded and stored locally.
@@ -53,7 +55,7 @@ The dynamic `app/inspections/[id]` route loads any existing draft after the data
 - Public Expo environment variables contain configuration only, never secrets.
 - Authentication tokens will use platform-secure storage rather than SQLite.
 - SQL statements use bound parameters.
-- Photos remain local until an authenticated upload succeeds.
+- Photo URIs and metadata remain local until an authenticated upload succeeds. Picker cache files are not treated as durable server storage.
 
 ## Testing approach
 

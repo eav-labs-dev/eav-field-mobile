@@ -8,6 +8,7 @@
 - Added a committed npm lockfile and switched CI and setup guidance to reproducible `npm ci` installs.
 - Added the versioned SQLite draft schema, database provider, repository, and unit coverage.
 - Added inspection details, a two-section form, completion progress, and debounced offline autosave.
+- Added camera and photo-library attachments with permission handling, draft recovery, previews, removal, and unit coverage.
 
 ## 0.1.0 - Portfolio Rebuild Started
 
