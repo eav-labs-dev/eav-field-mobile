@@ -15,6 +15,7 @@
 - Added validated Expo identifiers, EAS preview and production profiles, CI release preflight, and a maintainer release guide.
 - Added durable photo storage, authenticated multipart transfer, idempotent attachment keys, and server attachment references in inspection submissions.
 - Added startup recovery that returns interrupted in-flight uploads to the pending queue with retained retry metadata.
+- Hardened queue processing against local transition failures and added idempotency to final inspection submissions.
 
 ## 0.1.0 - Portfolio Rebuild Started
 

@@ -17,6 +17,7 @@ export type UploadQueueSummary = {
   attempted: number;
   synced: number;
   failed: number;
+  unresolved: number;
 };
 
 const errorMessage = (error: unknown): string =>
@@ -34,20 +35,43 @@ export const processUploadQueue = async (
   now: () => string = () => new Date().toISOString(),
 ): Promise<UploadQueueSummary> => {
   const drafts = (await repository.listPending()).filter((draft) => draft.syncStatus === 'pending');
-  const summary: UploadQueueSummary = { attempted: 0, synced: 0, failed: 0 };
+  const summary: UploadQueueSummary = { attempted: 0, synced: 0, failed: 0, unresolved: 0 };
 
   for (const draft of drafts) {
-    const claimed = await repository.markSyncing(draft.inspectionId, now());
+    let claimed = false;
+    try {
+      claimed = await repository.markSyncing(draft.inspectionId, now());
+    } catch {
+      summary.unresolved += 1;
+      continue;
+    }
     if (!claimed) continue;
 
     summary.attempted += 1;
+    let remoteAccepted = false;
     try {
       await adapter.upload(draft);
-      await repository.markSynced(draft.inspectionId, now());
-      summary.synced += 1;
+      remoteAccepted = true;
+      const persisted = await repository.markSynced(draft.inspectionId, now());
+      if (persisted) summary.synced += 1;
+      else summary.unresolved += 1;
     } catch (error) {
-      await repository.markFailed(draft.inspectionId, errorMessage(error), now());
-      summary.failed += 1;
+      if (remoteAccepted) {
+        summary.unresolved += 1;
+        continue;
+      }
+
+      try {
+        const persisted = await repository.markFailed(
+          draft.inspectionId,
+          errorMessage(error),
+          now(),
+        );
+        if (persisted) summary.failed += 1;
+        else summary.unresolved += 1;
+      } catch {
+        summary.unresolved += 1;
+      }
     }
   }
 

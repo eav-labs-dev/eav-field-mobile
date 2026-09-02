@@ -83,6 +83,7 @@ export default function SyncScreen() {
         {lastSummary ? (
           <Text style={styles.summaryText} testID="sync-last-result-text">
             Last run: {lastSummary.synced} uploaded · {lastSummary.failed} failed
+            {lastSummary.unresolved > 0 ? ` · ${lastSummary.unresolved} needs review` : ''}
           </Text>
         ) : null}
 
