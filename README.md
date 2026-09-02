@@ -6,7 +6,7 @@ Expo React Native application for field inspections, offline reporting, and reli
 
 EAV Field is under active development as part of the EAV Labs portfolio. The current foundation includes API-backed sign-in, secure native session storage, the main navigation, field officer dashboard, assignment list, sync centre, settings screen, shared design tokens, mock domain data, and CI coverage.
 
-Durable photo transfer and conflict reporting are the next implementation milestones.
+Conflict reporting and connectivity-aware synchronization are the next implementation milestones.
 
 ## Problem
 
@@ -19,6 +19,7 @@ Field teams often work where connectivity is unreliable. Inspection records must
 - SecureStore token persistence, protected routes, and authenticated API headers
 - Assignment dashboard and workload summary
 - Searchable inspection list
+- Authenticated assignment downloads with an atomic SQLite offline cache
 - Offline-draft and synchronization status interface
 - Versioned SQLite schema and bound-parameter draft repository
 - Inspection detail route with a two-section offline form
@@ -35,7 +36,7 @@ Field teams often work where connectivity is unreliable. Inspection records must
 
 ## Remaining MVP
 
-- Assignment downloads and conflict handling
+- Conflict handling and connectivity-aware synchronization
 - Device screenshots and demo walkthrough
 
 ## Stack

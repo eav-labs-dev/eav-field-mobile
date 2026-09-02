@@ -23,7 +23,7 @@
 - [x] Add centralized API client and normalized response errors.
 - [x] Add the manual JSON inspection upload adapter.
 - [x] Add durable local photo storage and binary upload adapters.
-- [ ] Add assignment downloads.
+- [x] Add authenticated assignment downloads and an atomic offline cache.
 - [x] Add explicit queue transitions, failure metadata, and manual retry.
 - [x] Recover interrupted in-flight uploads during database initialization.
 - [ ] Add conflict reporting.
