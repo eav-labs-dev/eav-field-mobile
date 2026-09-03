@@ -22,6 +22,7 @@
 - Removed hard-coded demo dashboard and queue metadata from configured-API mode and made demo assignments opt-in by default.
 - Reconciled MVP, post-MVP, screenshot, and remote-build limitations across the release documentation.
 - Added an explicit opt-in offline demo session so reviewers can exercise local workflows without a deployed Field API.
+- Added accessible filled/outline tab icons, a clearer active-tab treatment, and assignment-card affordances.
 
 ## 0.1.0 - Portfolio Rebuild Started
 
