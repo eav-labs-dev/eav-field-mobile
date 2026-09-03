@@ -55,4 +55,4 @@ The response `data` is an array of inspection summaries. EAV Field validates the
 
 ## Deliberate boundaries
 
-Orphan-attachment reconciliation, background connectivity processing, and conflict resolution remain separate milestones.
+Orphan-attachment reconciliation, background connectivity processing, and server conflict handling remain post-MVP milestones. Until the API defines a conflict response, such responses follow the visible failed-item retry path and local work is retained.

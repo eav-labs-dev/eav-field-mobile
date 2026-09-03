@@ -4,9 +4,7 @@ Expo React Native application for field inspections, offline reporting, and reli
 
 ## Project status
 
-EAV Field is under active development as part of the EAV Labs portfolio. The current foundation includes API-backed sign-in, secure native session storage, the main navigation, field officer dashboard, assignment list, sync centre, settings screen, shared design tokens, mock domain data, and CI coverage.
-
-Conflict reporting and connectivity-aware synchronization are the next implementation milestones.
+EAV Field's MVP is implemented on `dev` and is being prepared for its release review. It includes API-backed sign-in, secure native session storage, cached assignments, an offline inspection form, durable photo evidence, a manual upload queue, and CI coverage.
 
 ## Problem
 
@@ -34,10 +32,11 @@ Field teams often work where connectivity is unreliable. Inspection records must
 - GitHub Actions type-check and test workflow
 - Validated Expo configuration and EAS preview/production build profiles
 
-## Remaining MVP
+## Release evidence still required
 
-- Conflict handling and connectivity-aware synchronization
-- Device screenshots and demo walkthrough
+- Android and iOS device screenshots
+- A recorded run of the documented demo walkthrough
+- Physical-device verification against the intended API environment
 
 ## Stack
 
@@ -89,11 +88,24 @@ npm run docs:check
 
 | Variable | Purpose | Default |
 |---|---|---|
-| `EXPO_PUBLIC_API_URL` | Backend base URL used by the future sync client | `http://localhost:8000` |
+| `EXPO_PUBLIC_API_URL` | Backend base URL used for authentication, assignments, and synchronization | `http://localhost:8000` |
 | `EXPO_PUBLIC_API_TIMEOUT_MS` | Maximum API request duration in milliseconds | `15000` |
-| `EXPO_PUBLIC_DEMO_MODE` | Enables fictional portfolio assignments only when explicitly `true` | `true` |
+| `EXPO_PUBLIC_DEMO_MODE` | Enables fictional portfolio assignments only when explicitly `true` | `false` |
 
 Do not place secrets in `EXPO_PUBLIC_*` variables. Expo exposes those values to the application bundle.
+
+Demo mode never bypasses authentication or replaces the configured API. Set `EXPO_PUBLIC_DEMO_MODE=true` only for a labelled portfolio demonstration; when it is false, dashboard, detail, and sync screens use cached API assignments only.
+
+## Screenshots and demo
+
+The repository does not include fabricated device captures. Follow the [reviewer demo walkthrough](docs/demo.md) to create sanitized Android and iOS evidence under `docs/screenshots/` before the release PR.
+
+## Known limitations
+
+- Synchronization is user-initiated; the MVP does not run a background connectivity worker.
+- The API contract does not yet expose a conflict response and the client does not attempt automatic conflict resolution.
+- Remote EAS builds require a maintainer to link the intended Expo project and provide signing credentials.
+- Store submission, production usage, and physical-device verification are not claimed by this repository.
 
 ## Structure
 

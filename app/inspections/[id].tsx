@@ -386,7 +386,7 @@ export default function InspectionDetailScreen() {
         ) : null}
 
         <Text style={styles.offlineNote}>
-          Changes stay on this device and are saved automatically. Upload will be added in the synchronization milestone.
+          Changes stay on this device and are saved automatically. Queue a complete draft, then upload it from the Sync centre.
         </Text>
       </ScrollView>
     </SafeAreaView>
