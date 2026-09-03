@@ -24,6 +24,7 @@ import type { Inspection } from '@/src/features/inspections/types';
 import { createPhotoAttachment } from '@/src/features/inspections/photo-attachment';
 import { deletePersistedPhoto, persistPhotoAsset } from '@/src/features/inspections/photo-storage';
 import { colors, radius, spacing } from '@/src/shared/theme/tokens';
+import { isDemoModeEnabled } from '@/src/shared/config/demo-mode';
 
 type SaveState = 'loading' | 'ready' | 'saving' | 'saved' | 'error';
 type QueueState = 'idle' | 'queueing' | 'queued' | 'error';
@@ -40,7 +41,7 @@ export default function InspectionDetailScreen() {
   const repository = useMemo(() => createDraftRepository(database), [database]);
   const assignmentRepository = useMemo(() => createAssignmentRepository(database), [database]);
   const [inspection, setInspection] = useState<Inspection | null | undefined>(() =>
-    mockInspections.find((item) => item.id === id),
+    isDemoModeEnabled() ? mockInspections.find((item) => item.id === id) : undefined,
   );
   const [assignmentLoading, setAssignmentLoading] = useState(true);
   const [answers, setAnswers] = useState<InspectionFormAnswers>(emptyInspectionForm);
@@ -58,6 +59,9 @@ export default function InspectionDetailScreen() {
       .findById(id)
       .then((savedAssignment) => {
         if (isActive && savedAssignment) setInspection(savedAssignment);
+      })
+      .catch(() => {
+        if (isActive) setInspection(null);
       })
       .finally(() => {
         if (isActive) setAssignmentLoading(false);

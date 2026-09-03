@@ -16,6 +16,7 @@ import { refreshAssignments } from '@/src/features/inspections/refresh-assignmen
 import type { Inspection } from '@/src/features/inspections/types';
 import { apiClient } from '@/src/shared/api/client';
 import { ScreenHeader } from '@/src/shared/components/screen-header';
+import { isDemoModeEnabled } from '@/src/shared/config/demo-mode';
 import { colors, radius, spacing } from '@/src/shared/theme/tokens';
 
 export default function InspectionsScreen() {
@@ -23,13 +24,18 @@ export default function InspectionsScreen() {
   const repository = useMemo(() => createAssignmentRepository(database), [database]);
   const adapter = useMemo(() => createAssignmentDownloadAdapter(apiClient), []);
   const [query, setQuery] = useState('');
-  const [assignments, setAssignments] = useState<Inspection[]>(mockInspections);
+  const demoMode = isDemoModeEnabled();
+  const [assignments, setAssignments] = useState<Inspection[]>(demoMode ? mockInspections : []);
   const [refreshState, setRefreshState] = useState<'idle' | 'refreshing' | 'error'>('idle');
 
   const loadCachedAssignments = useCallback(async () => {
-    const cached = await repository.list();
-    if (cached.length > 0) setAssignments(cached);
-  }, [repository]);
+    try {
+      const cached = await repository.list();
+      if (cached.length > 0 || !demoMode) setAssignments(cached);
+    } catch {
+      setRefreshState('error');
+    }
+  }, [demoMode, repository]);
 
   useFocusEffect(
     useCallback(() => {
@@ -84,6 +90,9 @@ export default function InspectionsScreen() {
             Latest assignments could not be downloaded. Showing the saved offline list.
           </Text>
         ) : null}
+        {inspections.length === 0 ? (
+          <Text style={styles.emptyText}>No assignments are saved on this device.</Text>
+        ) : null}
         {inspections.map((inspection) => (
           <InspectionCard
             inspection={inspection}
@@ -103,4 +112,5 @@ const styles = StyleSheet.create({
   refreshButton: { alignItems: 'center', borderColor: colors.primary, borderRadius: radius.sm, borderWidth: 1, justifyContent: 'center', minHeight: 44 },
   refreshButtonText: { color: colors.primary, fontSize: 13, fontWeight: '800' },
   errorText: { color: colors.danger, fontSize: 12, lineHeight: 18 },
+  emptyText: { color: colors.textMuted, fontSize: 13, textAlign: 'center' },
 });

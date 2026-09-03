@@ -90,7 +90,7 @@ npm run config:check
 |---|---|---|
 | `EXPO_PUBLIC_API_URL` | Backend base URL used by the future sync client | `http://localhost:8000` |
 | `EXPO_PUBLIC_API_TIMEOUT_MS` | Maximum API request duration in milliseconds | `15000` |
-| `EXPO_PUBLIC_DEMO_MODE` | Enables portfolio demo data | `true` |
+| `EXPO_PUBLIC_DEMO_MODE` | Enables fictional portfolio assignments only when explicitly `true` | `true` |
 
 Do not place secrets in `EXPO_PUBLIC_*` variables. Expo exposes those values to the application bundle.
 

@@ -16,6 +16,7 @@
 - Added durable photo storage, authenticated multipart transfer, idempotent attachment keys, and server attachment references in inspection submissions.
 - Added startup recovery that returns interrupted in-flight uploads to the pending queue with retained retry metadata.
 - Added authenticated assignment downloads, transactional SQLite caching, offline fallback, and refresh status handling.
+- Restricted fictional assignments to explicitly enabled demo builds.
 
 ## 0.1.0 - Portfolio Rebuild Started
 
