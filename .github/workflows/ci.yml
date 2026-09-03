@@ -25,5 +25,7 @@ jobs:
         run: npm run typecheck
       - name: Validate Expo and EAS configuration
         run: npm run config:check > /dev/null
+      - name: Validate documentation contract
+        run: npm run docs:check
       - name: Test
         run: npm run test

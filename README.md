@@ -82,6 +82,7 @@ npm run typecheck
 npm run test
 npm run check
 npm run config:check
+npm run docs:check
 ```
 
 ## Environment
@@ -111,6 +112,7 @@ docs/                        Architecture, roadmap, and project notes
 - [API synchronization contract](docs/api-sync.md)
 - [Authentication contract](docs/authentication.md)
 - [Release and demo builds](docs/release.md)
+- [Reviewer demo walkthrough](docs/demo.md)
 - [Roadmap](docs/roadmap.md)
 
 ## What this project demonstrates
