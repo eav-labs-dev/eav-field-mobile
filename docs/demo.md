@@ -7,7 +7,7 @@ This walkthrough gives reviewers a repeatable way to evaluate the offline inspec
 1. Follow the local setup in the README and copy `.env.example` to `.env`.
 2. Set `EXPO_PUBLIC_DEMO_MODE=true` in `.env` to use the deterministic portfolio assignments. The checked-in example defaults to `false` so fictional data cannot appear accidentally.
 3. Start the app with `npm start` and open an Android emulator or iOS simulator.
-4. Use a non-production test account when demonstrating API-backed authentication.
+4. Choose “Explore offline demo”. Alternatively, use a non-production API account when a compatible Field backend is available.
 
 Before recording evidence, run:
 
@@ -20,7 +20,7 @@ npm run docs:check
 
 ## Primary walkthrough
 
-1. Sign in and show that protected routes are not available before authentication.
+1. Show that protected routes are unavailable before authentication, then enter the explicitly labelled offline demo.
 2. Open the inspections list, search by site or reference, and select an assignment.
 3. Complete the contact and condition sections, then leave and reopen the assignment to demonstrate offline autosave.
 4. Attach one camera image and one library image. Explain that EAV Field copies both into app-owned storage.

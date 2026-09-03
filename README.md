@@ -14,6 +14,7 @@ Field teams often work where connectivity is unreliable. Inspection records must
 
 - Expo Router navigation
 - API-backed field-officer sign-in and restored native sessions
+- Explicit opt-in offline demo session for reviewers without a compatible Field API
 - SecureStore token persistence, protected routes, and authenticated API headers
 - Assignment dashboard and workload summary
 - Searchable inspection list
@@ -94,7 +95,7 @@ npm run docs:check
 
 Do not place secrets in `EXPO_PUBLIC_*` variables. Expo exposes those values to the application bundle.
 
-Demo mode never bypasses authentication or replaces the configured API. Set `EXPO_PUBLIC_DEMO_MODE=true` only for a labelled portfolio demonstration; when it is false, dashboard, detail, and sync screens use cached API assignments only.
+Set `EXPO_PUBLIC_DEMO_MODE=true` only for a labelled portfolio demonstration. It exposes an “Explore offline demo” action backed by a fictional local session and assignments. When demo mode is false, that action is absent and dashboard, detail, and sync screens use authenticated API data cached on the device. Demo downloads and uploads are expected to fail unless a compatible Field API is configured.
 
 ## Screenshots and demo
 

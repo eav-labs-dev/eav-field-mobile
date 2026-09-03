@@ -5,7 +5,10 @@
 
 import { create } from 'zustand';
 
+import { isDemoModeEnabled } from '@/src/shared/config/demo-mode';
+
 import { authenticate } from './auth-service';
+import { createDemoSession } from './demo-session';
 import {
   clearStoredSession,
   readStoredSession,
@@ -24,6 +27,7 @@ type SessionState = {
   status: SessionStatus;
   restoreSession: () => Promise<void>;
   signIn: (email: string, password: string) => Promise<boolean>;
+  signInDemo: () => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -47,6 +51,11 @@ export const useSessionStore = create<SessionState>((set) => ({
     set({ errorMessage: null, status: 'restoring' });
     try {
       const session = await readStoredSession();
+      if (session?.kind === 'demo' && !isDemoModeEnabled()) {
+        await clearStoredSession();
+        set({ displayName: '', email: '', isAuthenticated: false, status: 'anonymous' });
+        return;
+      }
       set(
         session
           ? authenticatedState(session)
@@ -79,6 +88,11 @@ export const useSessionStore = create<SessionState>((set) => ({
       });
       return false;
     }
+  },
+  signInDemo: async () => {
+    const session = createDemoSession();
+    await writeStoredSession(session);
+    set(authenticatedState(session));
   },
   signOut: async () => {
     await clearStoredSession();
