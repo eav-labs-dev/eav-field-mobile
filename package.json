@@ -9,9 +9,10 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "config:check": "node scripts/validate-release-config.mjs && expo config --type public --json",
+    "docs:check": "node scripts/validate-docs.mjs",
     "typecheck": "tsc --noEmit",
     "test": "jest --ci",
-    "check": "npm run typecheck && npm run test"
+    "check": "npm run typecheck && npm run test && npm run docs:check"
   },
   "dependencies": {
     "@tanstack/react-query": "^5",
