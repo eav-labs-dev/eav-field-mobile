@@ -34,6 +34,16 @@ The adapter expects the standard EAV response envelope:
 }
 ```
 
+## Assignment download
+
+The signed-in field officer refreshes assignments from:
+
+```text
+GET /api/v1/inspections/assignments
+```
+
+The response `data` is an array of inspection summaries. EAV Field validates the required identifiers and progress range, then atomically replaces the local SQLite assignment cache. A network or validation failure preserves the previous offline snapshot.
+
 ## Failure behavior
 
 - Network, timeout, non-2xx, and unsuccessful-envelope responses become safe API errors.
@@ -45,4 +55,4 @@ The adapter expects the standard EAV response envelope:
 
 ## Deliberate boundaries
 
-Assignment downloads, orphan-attachment reconciliation, background connectivity processing, and conflict resolution remain separate milestones.
+Orphan-attachment reconciliation, background connectivity processing, and conflict resolution remain separate milestones.

@@ -6,7 +6,7 @@ Expo React Native application for field inspections, offline reporting, and reli
 
 EAV Field is under active development as part of the EAV Labs portfolio. The current foundation includes API-backed sign-in, secure native session storage, the main navigation, field officer dashboard, assignment list, sync centre, settings screen, shared design tokens, mock domain data, and CI coverage.
 
-Durable photo transfer and conflict reporting are the next implementation milestones.
+Conflict reporting and connectivity-aware synchronization are the next implementation milestones.
 
 ## Problem
 
@@ -19,6 +19,7 @@ Field teams often work where connectivity is unreliable. Inspection records must
 - SecureStore token persistence, protected routes, and authenticated API headers
 - Assignment dashboard and workload summary
 - Searchable inspection list
+- Authenticated assignment downloads with an atomic SQLite offline cache
 - Offline-draft and synchronization status interface
 - Versioned SQLite schema and bound-parameter draft repository
 - Inspection detail route with a two-section offline form
@@ -35,7 +36,7 @@ Field teams often work where connectivity is unreliable. Inspection records must
 
 ## Remaining MVP
 
-- Assignment downloads and conflict handling
+- Conflict handling and connectivity-aware synchronization
 - Device screenshots and demo walkthrough
 
 ## Stack
@@ -81,6 +82,7 @@ npm run typecheck
 npm run test
 npm run check
 npm run config:check
+npm run docs:check
 ```
 
 ## Environment
@@ -89,7 +91,7 @@ npm run config:check
 |---|---|---|
 | `EXPO_PUBLIC_API_URL` | Backend base URL used by the future sync client | `http://localhost:8000` |
 | `EXPO_PUBLIC_API_TIMEOUT_MS` | Maximum API request duration in milliseconds | `15000` |
-| `EXPO_PUBLIC_DEMO_MODE` | Enables portfolio demo data | `true` |
+| `EXPO_PUBLIC_DEMO_MODE` | Enables fictional portfolio assignments only when explicitly `true` | `true` |
 
 Do not place secrets in `EXPO_PUBLIC_*` variables. Expo exposes those values to the application bundle.
 
@@ -110,6 +112,7 @@ docs/                        Architecture, roadmap, and project notes
 - [API synchronization contract](docs/api-sync.md)
 - [Authentication contract](docs/authentication.md)
 - [Release and demo builds](docs/release.md)
+- [Reviewer demo walkthrough](docs/demo.md)
 - [Roadmap](docs/roadmap.md)
 
 ## What this project demonstrates

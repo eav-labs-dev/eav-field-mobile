@@ -5,7 +5,7 @@
 
 import type { SQLiteDatabase } from 'expo-sqlite';
 
-export const DATABASE_VERSION = 1;
+export const DATABASE_VERSION = 2;
 
 export const INITIAL_SCHEMA_SQL = `
 PRAGMA journal_mode = WAL;
@@ -24,6 +24,36 @@ CREATE TABLE IF NOT EXISTS inspection_drafts (
 
 CREATE INDEX IF NOT EXISTS inspection_drafts_sync_status_idx
   ON inspection_drafts (sync_status, updated_at);
+
+CREATE TABLE IF NOT EXISTS inspection_assignments (
+  inspection_id TEXT PRIMARY KEY NOT NULL,
+  reference TEXT NOT NULL,
+  site_name TEXT NOT NULL,
+  location TEXT NOT NULL,
+  due_label TEXT NOT NULL,
+  status TEXT NOT NULL CHECK (status IN ('assigned', 'in-progress', 'draft', 'submitted')),
+  progress INTEGER NOT NULL CHECK (progress BETWEEN 0 AND 100),
+  downloaded_at TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS inspection_assignments_status_idx
+  ON inspection_assignments (status, due_label);
+`;
+
+export const ASSIGNMENT_SCHEMA_SQL = `
+CREATE TABLE IF NOT EXISTS inspection_assignments (
+  inspection_id TEXT PRIMARY KEY NOT NULL,
+  reference TEXT NOT NULL,
+  site_name TEXT NOT NULL,
+  location TEXT NOT NULL,
+  due_label TEXT NOT NULL,
+  status TEXT NOT NULL CHECK (status IN ('assigned', 'in-progress', 'draft', 'submitted')),
+  progress INTEGER NOT NULL CHECK (progress BETWEEN 0 AND 100),
+  downloaded_at TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS inspection_assignments_status_idx
+  ON inspection_assignments (status, due_label);
 `;
 
 export const INTERRUPTED_UPLOAD_MESSAGE = 'Upload interrupted before completion.';
@@ -45,6 +75,12 @@ export const migrateDatabase = async (database: SQLiteDatabase): Promise<void> =
   if (currentVersion === 0) {
     await database.execAsync(INITIAL_SCHEMA_SQL);
     await database.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);
+    return;
+  }
+
+  if (currentVersion < 2) {
+    await database.execAsync(ASSIGNMENT_SCHEMA_SQL);
+    await database.execAsync('PRAGMA user_version = 2');
   }
 };
 

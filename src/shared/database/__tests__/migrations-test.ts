@@ -43,6 +43,18 @@ describe('migrateDatabase', () => {
     expect(database.execAsync).not.toHaveBeenCalled();
   });
 
+  test('upgrades a version-one database with the assignment cache', async () => {
+    const database = createDatabase(1);
+
+    await migrateDatabase(database);
+
+    expect(database.execAsync).toHaveBeenNthCalledWith(
+      1,
+      expect.stringContaining('CREATE TABLE IF NOT EXISTS inspection_assignments'),
+    );
+    expect(database.execAsync).toHaveBeenNthCalledWith(2, 'PRAGMA user_version = 2');
+  });
+
   test('rejects a database created by a newer application version', async () => {
     const database = createDatabase(DATABASE_VERSION + 1);
 

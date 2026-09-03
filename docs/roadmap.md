@@ -23,7 +23,7 @@
 - [x] Add centralized API client and normalized response errors.
 - [x] Add the manual JSON inspection upload adapter.
 - [x] Add durable local photo storage and binary upload adapters.
-- [ ] Add assignment downloads.
+- [x] Add authenticated assignment downloads and an atomic offline cache.
 - [x] Add explicit queue transitions, failure metadata, and manual retry.
 - [x] Recover interrupted in-flight uploads during database initialization.
 - [ ] Add conflict reporting.
@@ -33,6 +33,6 @@
 
 - [ ] Add component and persistence integration tests.
 - [ ] Capture Android and iOS screenshots.
-- [ ] Add demo walkthrough.
+- [x] Add a reviewer demo walkthrough and evidence checklist.
 - [x] Validate Expo configuration and document EAS preview and production builds.
 - [ ] Promote the tested MVP from `dev` to `main`.

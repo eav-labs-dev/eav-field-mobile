@@ -11,6 +11,7 @@ import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { createDraftRepository } from '@/src/features/inspections/draft-repository';
+import { createAssignmentRepository } from '@/src/features/inspections/assignment-repository';
 import {
   calculateInspectionProgress,
   emptyInspectionForm,
@@ -19,9 +20,11 @@ import {
   type SiteCondition,
 } from '@/src/features/inspections/inspection-form';
 import { mockInspections } from '@/src/features/inspections/mock-inspections';
+import type { Inspection } from '@/src/features/inspections/types';
 import { createPhotoAttachment } from '@/src/features/inspections/photo-attachment';
 import { deletePersistedPhoto, persistPhotoAsset } from '@/src/features/inspections/photo-storage';
 import { colors, radius, spacing } from '@/src/shared/theme/tokens';
+import { isDemoModeEnabled } from '@/src/shared/config/demo-mode';
 
 type SaveState = 'loading' | 'ready' | 'saving' | 'saved' | 'error';
 type QueueState = 'idle' | 'queueing' | 'queued' | 'error';
@@ -36,7 +39,11 @@ export default function InspectionDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const database = useSQLiteContext();
   const repository = useMemo(() => createDraftRepository(database), [database]);
-  const inspection = mockInspections.find((item) => item.id === id);
+  const assignmentRepository = useMemo(() => createAssignmentRepository(database), [database]);
+  const [inspection, setInspection] = useState<Inspection | null | undefined>(() =>
+    isDemoModeEnabled() ? mockInspections.find((item) => item.id === id) : undefined,
+  );
+  const [assignmentLoading, setAssignmentLoading] = useState(true);
   const [answers, setAnswers] = useState<InspectionFormAnswers>(emptyInspectionForm);
   const [saveState, setSaveState] = useState<SaveState>('loading');
   const [queueState, setQueueState] = useState<QueueState>('idle');
@@ -44,6 +51,25 @@ export default function InspectionDetailScreen() {
   const createdAt = useRef(new Date().toISOString());
   const editVersion = useRef(0);
   const progress = calculateInspectionProgress(answers);
+
+  useEffect(() => {
+    if (!id) return;
+    let isActive = true;
+    assignmentRepository
+      .findById(id)
+      .then((savedAssignment) => {
+        if (isActive && savedAssignment) setInspection(savedAssignment);
+      })
+      .catch(() => {
+        if (isActive) setInspection(null);
+      })
+      .finally(() => {
+        if (isActive) setAssignmentLoading(false);
+      });
+    return () => {
+      isActive = false;
+    };
+  }, [assignmentRepository, id]);
 
   useEffect(() => {
     if (!inspection) return;
@@ -158,6 +184,14 @@ export default function InspectionDetailScreen() {
       setQueueState('error');
     }
   };
+
+  if (assignmentLoading && !inspection) {
+    return (
+      <SafeAreaView style={styles.safeArea} testID="inspection-detail-loading-page">
+        <View style={styles.notFound}><Text style={styles.notFoundTitle}>Loading assignment…</Text></View>
+      </SafeAreaView>
+    );
+  }
 
   if (!inspection) {
     return (
