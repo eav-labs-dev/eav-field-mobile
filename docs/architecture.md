@@ -35,7 +35,9 @@ Expo SQLite                 Remote API
 
 The root layout opens `eav-field.db` through Expo's `SQLiteProvider`. The provider runs ordered migrations before rendering application routes. SQLite `user_version` records the applied schema version.
 
-The first migration creates `inspection_drafts`, which stores serialized answers, completion progress, synchronization state, retry metadata, errors, and timestamps. Repository writes use bound parameters. A synchronization index supports ordered lookup of drafts that still require processing.
+The first migration creates `inspection_drafts`, which stores serialized answers, completion progress, synchronization state, retry metadata, errors, and timestamps. The second schema version adds `inspection_assignments`, the offline cache for work allocated to the signed-in field officer. Repository writes use bound parameters. A synchronization index supports ordered lookup of drafts that still require processing.
+
+Assignment refreshes download an authenticated snapshot and replace the cache inside one SQLite transaction. A failed download leaves the last usable snapshot untouched. The inspections list reads the cache on focus, supports an explicit refresh, and reports network failure without hiding offline work.
 
 The dynamic `app/inspections/[id]` route loads any existing draft after the database is ready. Field changes update local form state immediately and trigger a 600 ms debounced write. The UI reports loading, saving, saved, and error states without making network availability part of the save path.
 
