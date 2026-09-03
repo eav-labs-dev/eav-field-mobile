@@ -58,6 +58,9 @@ export const createInspectionUploadAdapter = (
       `/api/v1/inspections/${encodeURIComponent(draft.inspectionId)}/submissions`,
       {
         method: 'POST',
+        headers: {
+          'Idempotency-Key': `inspection-submission-${draft.inspectionId}-${draft.updatedAt}`,
+        },
         body: JSON.stringify(serializeInspectionDraft(draft, uploadedPhotos)),
       },
     );

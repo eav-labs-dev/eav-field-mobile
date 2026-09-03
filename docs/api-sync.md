@@ -14,7 +14,7 @@ EAV Field submits queued JSON inspection data to:
 POST /api/v1/inspections/{inspectionId}/submissions
 ```
 
-Before the final JSON request, each photo is uploaded as multipart form data to `POST /api/v1/inspections/{inspectionId}/attachments`. The stable local photo ID is also sent as an idempotency key so a retry does not need to create a duplicate attachment. The final submission contains server attachment IDs and excludes device-local URIs.
+Before the final JSON request, each photo is uploaded as multipart form data to `POST /api/v1/inspections/{inspectionId}/attachments`. The stable local photo ID is also sent as an idempotency key so a retry does not need to create a duplicate attachment. The final submission has its own stable idempotency key derived from the inspection and local update timestamp, contains server attachment IDs, and excludes device-local URIs.
 
 The adapter expects the standard EAV response envelope:
 
@@ -51,6 +51,7 @@ The response `data` is an array of inspection summaries. EAV Field validates the
 - Later queued drafts are still attempted when one upload fails.
 - Failed items require an explicit retry before another upload attempt.
 - Synced records remain as local audit snapshots.
+- A remote success is reported as synced only after SQLite accepts the final state transition. Local transition failures are counted as unresolved instead of being presented as successful uploads.
 
 ## Deliberate boundaries
 

@@ -57,6 +57,9 @@ describe('inspection upload adapter', () => {
     expect(photoAdapter.upload).toHaveBeenCalledWith('inspection/003', photo);
     expect(request).toHaveBeenCalledWith('/api/v1/inspections/inspection%2F003/submissions', {
       method: 'POST',
+      headers: {
+        'Idempotency-Key': `inspection-submission-${draft.inspectionId}-${draft.updatedAt}`,
+      },
       body: JSON.stringify(
         serializeInspectionDraft(
           draft,

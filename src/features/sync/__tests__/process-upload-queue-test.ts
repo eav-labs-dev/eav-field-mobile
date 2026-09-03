@@ -31,7 +31,7 @@ describe('processUploadQueue', () => {
 
     await expect(
       processUploadQueue(repository, adapter, () => '2026-08-26T08:10:00.000Z'),
-    ).resolves.toEqual({ attempted: 2, synced: 1, failed: 1 });
+    ).resolves.toEqual({ attempted: 2, synced: 1, failed: 1, unresolved: 0 });
     expect(repository.markSynced).toHaveBeenCalledWith(
       'inspection-1',
       '2026-08-26T08:10:00.000Z',
@@ -57,7 +57,51 @@ describe('processUploadQueue', () => {
       attempted: 0,
       synced: 0,
       failed: 0,
+      unresolved: 0,
     });
     expect(adapter.upload).not.toHaveBeenCalled();
+  });
+
+  test('does not report a remote success when the synced state cannot be persisted', async () => {
+    const repository = {
+      listPending: jest.fn().mockResolvedValue([draft('inspection-1')]),
+      markSyncing: jest.fn().mockResolvedValue(true),
+      markSynced: jest.fn().mockResolvedValue(false),
+      markFailed: jest.fn().mockResolvedValue(true),
+    } satisfies UploadQueueRepository;
+    const adapter = {
+      upload: jest.fn().mockResolvedValue({ submissionId: 'sub-1', receivedAt: 'now' }),
+    } satisfies InspectionUploadAdapter;
+
+    await expect(processUploadQueue(repository, adapter)).resolves.toEqual({
+      attempted: 1,
+      synced: 0,
+      failed: 0,
+      unresolved: 1,
+    });
+    expect(repository.markFailed).not.toHaveBeenCalled();
+  });
+
+  test('continues after a local claim error and surfaces the unresolved record', async () => {
+    const repository = {
+      listPending: jest.fn().mockResolvedValue([draft('inspection-1'), draft('inspection-2')]),
+      markSyncing: jest
+        .fn()
+        .mockRejectedValueOnce(new Error('database busy'))
+        .mockResolvedValueOnce(true),
+      markSynced: jest.fn().mockResolvedValue(true),
+      markFailed: jest.fn().mockResolvedValue(true),
+    } satisfies UploadQueueRepository;
+    const adapter = {
+      upload: jest.fn().mockResolvedValue({ submissionId: 'sub-2', receivedAt: 'now' }),
+    } satisfies InspectionUploadAdapter;
+
+    await expect(processUploadQueue(repository, adapter)).resolves.toEqual({
+      attempted: 1,
+      synced: 1,
+      failed: 0,
+      unresolved: 1,
+    });
+    expect(adapter.upload).toHaveBeenCalledTimes(1);
   });
 });
