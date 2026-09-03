@@ -9,10 +9,19 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSessionStore } from '@/src/features/auth/session-store';
 import { ScreenHeader } from '@/src/shared/components/screen-header';
 import { colors, radius, spacing } from '@/src/shared/theme/tokens';
+import { isDemoModeEnabled } from '@/src/shared/config/demo-mode';
 
 export default function SettingsScreen() {
   const displayName = useSessionStore((state) => state.displayName);
+  const email = useSessionStore((state) => state.email);
   const signOut = useSessionStore((state) => state.signOut);
+  const initials =
+    displayName
+      .trim()
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join('') || 'FO';
 
   const handleSignOut = async () => {
     await signOut();
@@ -24,19 +33,21 @@ export default function SettingsScreen() {
       <View style={styles.content}>
         <ScreenHeader subtitle="Account, device storage, and sync preferences." title="Settings" />
         <View style={styles.profileCard} testID="settings-profile-card">
-          <View style={styles.avatar}><Text style={styles.avatarText}>AM</Text></View>
+          <View style={styles.avatar}><Text style={styles.avatarText}>{initials}</Text></View>
           <View>
             <Text style={styles.name}>{displayName}</Text>
-            <Text style={styles.role}>Field inspection officer</Text>
+            <Text style={styles.role}>{email}</Text>
           </View>
         </View>
         <View style={styles.detailCard}>
           <Text style={styles.detailLabel}>Offline storage</Text>
-          <Text style={styles.detailValue}>Enabled · 1 draft stored</Text>
+          <Text style={styles.detailValue}>Enabled on this device</Text>
         </View>
         <View style={styles.detailCard}>
           <Text style={styles.detailLabel}>API environment</Text>
-          <Text style={styles.detailValue}>Portfolio demo</Text>
+          <Text style={styles.detailValue}>
+            {isDemoModeEnabled() ? 'Demo assignments enabled' : 'Configured API only'}
+          </Text>
         </View>
         <Pressable onPress={() => void handleSignOut()} style={styles.signOutButton} testID="settings-sign-out-button">
           <Text style={styles.signOutText}>Sign out</Text>

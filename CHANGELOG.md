@@ -19,6 +19,8 @@
 - Added authenticated assignment downloads, transactional SQLite caching, offline fallback, and refresh status handling.
 - Restricted fictional assignments to explicitly enabled demo builds.
 - Added a validated reviewer demo walkthrough, evidence checklist, and pull-request verification template.
+- Removed hard-coded demo dashboard and queue metadata from configured-API mode and made demo assignments opt-in by default.
+- Reconciled MVP, post-MVP, screenshot, and remote-build limitations across the release documentation.
 
 ## 0.1.0 - Portfolio Rebuild Started
 

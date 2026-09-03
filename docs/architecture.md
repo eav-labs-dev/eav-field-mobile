@@ -22,13 +22,13 @@ Expo SQLite                 Remote API
 
 - `app/(auth)` contains authentication screens.
 - `app/(tabs)` contains the main field-operation navigation.
-- Future `app/inspections` routes will contain assignment detail and form workflows.
+- `app/inspections` contains assignment detail and offline form workflows.
 
 ## Feature boundaries
 
 - `src/features/auth` owns the authentication adapter, session state, and secure persistence boundary.
 - `src/features/inspections` owns inspection types, lists, forms, validation, and persistence.
-- `src/features/sync` owns the upload queue state machine and retry rules. Future adapters will add transport and conflict reporting.
+- `src/features/sync` owns the upload queue state machine, retry rules, and authenticated upload adapters.
 - `src/shared` contains components and tokens that have no feature-specific business rules.
 
 ## Local database
@@ -58,7 +58,7 @@ The shared API client normalizes the configured base URL, JSON headers, request 
 3. The draft receives a synchronization state such as `pending`, `syncing`, `synced`, or `failed`.
 4. The sync worker uploads queued changes when a connection is available.
 5. Successful responses update the local record with its remote identifier and server timestamp.
-6. Conflicts remain visible to the user and are never resolved by silently discarding local work.
+6. Upload failures remain visible to the user and are never resolved by silently discarding local work. Server conflict responses are a post-MVP contract milestone.
 
 ## Security boundaries
 

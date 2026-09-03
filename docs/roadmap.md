@@ -17,7 +17,7 @@
 - [x] Save and recover drafts automatically.
 - [x] Add camera and photo-library attachments to offline drafts.
 
-## Synchronization
+## Completed MVP — synchronization
 
 - [x] Add API-backed authentication and secure native session restoration.
 - [x] Add centralized API client and normalized response errors.
@@ -26,13 +26,17 @@
 - [x] Add authenticated assignment downloads and an atomic offline cache.
 - [x] Add explicit queue transitions, failure metadata, and manual retry.
 - [x] Recover interrupted in-flight uploads during database initialization.
-- [ ] Add conflict reporting.
-- [ ] Add connectivity-aware background synchronization.
 
-## Portfolio release
+## Completed MVP — portfolio release foundation
 
-- [ ] Add component and persistence integration tests.
 - [ ] Capture Android and iOS screenshots.
 - [x] Add a reviewer demo walkthrough and evidence checklist.
 - [x] Validate Expo configuration and document EAS preview and production builds.
 - [ ] Promote the tested MVP from `dev` to `main`.
+
+## Post-MVP ideas
+
+- Add an API-defined conflict response and dedicated conflict-resolution interface.
+- Add connectivity-aware background synchronization.
+- Add device-level end-to-end coverage for the primary inspection workflow.
+- Reconcile server attachments orphaned by an interrupted multi-step upload.

@@ -3,32 +3,69 @@
  */
 
 import { router } from 'expo-router';
+import { useFocusEffect } from 'expo-router';
+import { useSQLiteContext } from 'expo-sqlite';
+import { useCallback, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { InspectionCard } from '@/src/features/inspections/inspection-card';
+import { createAssignmentRepository } from '@/src/features/inspections/assignment-repository';
+import { createDraftRepository } from '@/src/features/inspections/draft-repository';
 import { getInspectionSummary, mockInspections } from '@/src/features/inspections/mock-inspections';
+import type { Inspection } from '@/src/features/inspections/types';
+import { useSessionStore } from '@/src/features/auth/session-store';
 import { ScreenHeader } from '@/src/shared/components/screen-header';
+import { isDemoModeEnabled } from '@/src/shared/config/demo-mode';
 import { colors, radius, spacing } from '@/src/shared/theme/tokens';
 
-const summary = getInspectionSummary(mockInspections);
-
 export default function DashboardScreen() {
+  const database = useSQLiteContext();
+  const assignmentRepository = useMemo(() => createAssignmentRepository(database), [database]);
+  const draftRepository = useMemo(() => createDraftRepository(database), [database]);
+  const displayName = useSessionStore((state) => state.displayName);
+  const demoMode = isDemoModeEnabled();
+  const [assignments, setAssignments] = useState<Inspection[]>(demoMode ? mockInspections : []);
+  const [waitingDrafts, setWaitingDrafts] = useState(0);
+
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+      Promise.all([assignmentRepository.list(), draftRepository.listPending()])
+        .then(([cachedAssignments, pendingDrafts]) => {
+          if (!isActive) return;
+          if (cachedAssignments.length > 0 || !demoMode) setAssignments(cachedAssignments);
+          setWaitingDrafts(pendingDrafts.length);
+        })
+        .catch(() => {
+          // Keep the last usable local snapshot on screen.
+        });
+      return () => {
+        isActive = false;
+      };
+    }, [assignmentRepository, demoMode, draftRepository]),
+  );
+
+  const summary = getInspectionSummary(assignments);
+  const firstName = displayName.trim().split(/\s+/)[0] || 'Field officer';
+
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea} testID="dashboard-page">
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <ScreenHeader
-          eyebrow="THURSDAY · ACCRA"
           subtitle="Your assignments are available offline on this device."
-          title="Good afternoon, Ama"
+          title={`Welcome, ${firstName}`}
         />
 
         <View style={styles.syncBanner} testID="dashboard-sync-status-card">
           <View>
             <Text style={styles.syncTitle}>Device is ready for field work</Text>
-            <Text style={styles.syncText}>Last synced 12 minutes ago · 1 draft waiting</Text>
+            <Text style={styles.syncText}>
+              {waitingDrafts === 0
+                ? 'No drafts are waiting to sync'
+                : `${waitingDrafts} draft${waitingDrafts === 1 ? '' : 's'} waiting to sync`}
+            </Text>
           </View>
-          <View style={styles.onlineDot} />
         </View>
 
         <View style={styles.metrics}>
@@ -53,13 +90,16 @@ export default function DashboardScreen() {
           </Pressable>
         </View>
 
-        {mockInspections.slice(0, 2).map((inspection) => (
+        {assignments.slice(0, 2).map((inspection) => (
           <InspectionCard
             inspection={inspection}
             key={inspection.id}
             onPress={() => router.push({ pathname: '/inspections/[id]', params: { id: inspection.id } })}
           />
         ))}
+        {assignments.length === 0 ? (
+          <Text style={styles.emptyText}>No assignments are saved on this device.</Text>
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );
@@ -71,7 +111,6 @@ const styles = StyleSheet.create({
   syncBanner: { alignItems: 'center', backgroundColor: colors.primary, borderRadius: radius.md, flexDirection: 'row', justifyContent: 'space-between', padding: spacing.md },
   syncTitle: { color: '#FFFFFF', fontSize: 15, fontWeight: '800' },
   syncText: { color: '#D7E8DF', fontSize: 12, marginTop: spacing.xs },
-  onlineDot: { backgroundColor: '#7EE2A8', borderRadius: 99, height: 12, width: 12 },
   metrics: { flexDirection: 'row', gap: spacing.sm },
   metricCard: { backgroundColor: colors.surface, borderColor: colors.border, borderRadius: radius.md, borderWidth: 1, flex: 1, padding: 14 },
   metricValue: { color: colors.text, fontSize: 25, fontWeight: '800' },
@@ -79,4 +118,5 @@ const styles = StyleSheet.create({
   sectionHeader: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' },
   sectionTitle: { color: colors.text, fontSize: 19, fontWeight: '800' },
   link: { color: colors.primary, fontSize: 14, fontWeight: '800' },
+  emptyText: { color: colors.textMuted, fontSize: 13, textAlign: 'center' },
 });

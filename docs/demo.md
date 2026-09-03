@@ -5,7 +5,7 @@ This walkthrough gives reviewers a repeatable way to evaluate the offline inspec
 ## Preparation
 
 1. Follow the local setup in the README and copy `.env.example` to `.env`.
-2. Keep `EXPO_PUBLIC_DEMO_MODE=true` to use the deterministic portfolio assignments.
+2. Set `EXPO_PUBLIC_DEMO_MODE=true` in `.env` to use the deterministic portfolio assignments. The checked-in example defaults to `false` so fictional data cannot appear accidentally.
 3. Start the app with `npm start` and open an Android emulator or iOS simulator.
 4. Use a non-production test account when demonstrating API-backed authentication.
 

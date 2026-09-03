@@ -14,7 +14,8 @@ import {
   createDraftRepository,
   type InspectionDraft,
 } from '@/src/features/inspections/draft-repository';
-import { mockInspections } from '@/src/features/inspections/mock-inspections';
+import { createAssignmentRepository } from '@/src/features/inspections/assignment-repository';
+import type { Inspection } from '@/src/features/inspections/types';
 import { processUploadQueue, type UploadQueueSummary } from '@/src/features/sync/process-upload-queue';
 import { createInspectionUploadAdapter } from '@/src/features/sync/upload-adapter';
 import { apiClient } from '@/src/shared/api/client';
@@ -32,20 +33,27 @@ const statusLabels = {
 export default function SyncScreen() {
   const database = useSQLiteContext();
   const repository = useMemo(() => createDraftRepository(database), [database]);
+  const assignmentRepository = useMemo(() => createAssignmentRepository(database), [database]);
   const uploadAdapter = useMemo(() => createInspectionUploadAdapter(apiClient), []);
   const [drafts, setDrafts] = useState<InspectionDraft[]>([]);
+  const [assignments, setAssignments] = useState<Inspection[]>([]);
   const [loadState, setLoadState] = useState<LoadState>('loading');
   const [lastSummary, setLastSummary] = useState<UploadQueueSummary | null>(null);
 
   const loadQueue = useCallback(async () => {
     setLoadState('loading');
     try {
-      setDrafts(await repository.listPending());
+      const [pendingDrafts, cachedAssignments] = await Promise.all([
+        repository.listPending(),
+        assignmentRepository.list(),
+      ]);
+      setDrafts(pendingDrafts);
+      setAssignments(cachedAssignments);
       setLoadState('ready');
     } catch {
       setLoadState('error');
     }
-  }, [repository]);
+  }, [assignmentRepository, repository]);
 
   useFocusEffect(
     useCallback(() => {
@@ -96,7 +104,7 @@ export default function SyncScreen() {
         ) : null}
 
         {drafts.map((draft) => {
-          const inspection = mockInspections.find((item) => item.id === draft.inspectionId);
+          const inspection = assignments.find((item) => item.id === draft.inspectionId);
           return (
             <View
               key={draft.inspectionId}
