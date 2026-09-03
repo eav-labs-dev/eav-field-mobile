@@ -64,6 +64,7 @@ The shared API client normalizes the configured base URL, JSON headers, request 
 
 - Public Expo environment variables contain configuration only, never secrets.
 - Authentication tokens use Expo SecureStore on native devices rather than SQLite. Web sessions remain memory-only.
+- The opt-in portfolio demo stores a clearly fictional local session through the same boundary; it is unavailable unless demo mode is explicitly enabled and does not represent server authentication.
 - The API client reads the stored token for each protected request and sends it as a bearer token. The login request explicitly skips authentication.
 - Passwords exist only in the sign-in form and login request body; they are never written to device storage.
 - SQL statements use bound parameters.

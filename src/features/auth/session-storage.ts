@@ -7,6 +7,7 @@ import * as SecureStore from 'expo-secure-store';
 
 export type StoredSession = {
   accessToken: string;
+  kind?: 'api' | 'demo';
   user: {
     displayName: string;
     email: string;
@@ -21,6 +22,7 @@ const isStoredSession = (value: unknown): value is StoredSession => {
   const session = value as Partial<StoredSession>;
   return Boolean(
     session.accessToken &&
+      (session.kind === undefined || session.kind === 'api' || session.kind === 'demo') &&
       session.user?.displayName &&
       session.user?.email &&
       typeof session.accessToken === 'string' &&
@@ -63,7 +65,10 @@ export const readStoredSession = async (): Promise<StoredSession | null> => {
 };
 
 /** Supplies a fresh token to the API client for every authenticated request. */
-export const getStoredAccessToken = async () => (await readStoredSession())?.accessToken ?? null;
+export const getStoredAccessToken = async () => {
+  const session = await readStoredSession();
+  return session?.kind === 'demo' ? null : session?.accessToken ?? null;
+};
 
 /** Clears native and in-memory session copies during sign-out. */
 export const clearStoredSession = async () => {

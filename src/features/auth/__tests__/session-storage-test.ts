@@ -47,4 +47,10 @@ describe('session storage', () => {
     await expect(readStoredSession()).resolves.toBeNull();
     expect(mockSecureValues.size).toBe(0);
   });
+
+  test('does not expose a fictional demo token to API requests', async () => {
+    await writeStoredSession({ ...session, kind: 'demo' });
+
+    await expect(getStoredAccessToken()).resolves.toBeNull();
+  });
 });

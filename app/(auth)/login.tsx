@@ -8,6 +8,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useSessionStore } from '@/src/features/auth/session-store';
+import { isDemoModeEnabled } from '@/src/shared/config/demo-mode';
 import { colors, radius, spacing } from '@/src/shared/theme/tokens';
 
 export default function LoginScreen() {
@@ -16,9 +17,16 @@ export default function LoginScreen() {
   const errorMessage = useSessionStore((state) => state.errorMessage);
   const isSigningIn = useSessionStore((state) => state.isSigningIn);
   const signIn = useSessionStore((state) => state.signIn);
+  const signInDemo = useSessionStore((state) => state.signInDemo);
+  const demoMode = isDemoModeEnabled();
 
   const handleSignIn = async () => {
     if (await signIn(email, password)) router.replace('/(tabs)');
+  };
+
+  const handleDemoSignIn = async () => {
+    await signInDemo();
+    router.replace('/(tabs)');
   };
 
   return (
@@ -72,6 +80,22 @@ export default function LoginScreen() {
             </Text>
           ) : null}
           <Text style={styles.demoNote}>Use the field-officer account configured by the API.</Text>
+          {demoMode ? (
+            <View style={styles.demoSection}>
+              <Text style={styles.demoLabel}>PORTFOLIO DEMO · FICTIONAL LOCAL DATA</Text>
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => void handleDemoSignIn()}
+                style={styles.demoButton}
+                testID="auth-login-demo-button"
+              >
+                <Text style={styles.demoButtonText}>Explore offline demo</Text>
+              </Pressable>
+              <Text style={styles.demoNote}>
+                No API account is required. Downloads and uploads still require a compatible backend.
+              </Text>
+            </View>
+          ) : null}
         </View>
       </View>
     </SafeAreaView>
@@ -93,4 +117,8 @@ const styles = StyleSheet.create({
   buttonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '800' },
   demoNote: { color: colors.textMuted, fontSize: 12, lineHeight: 18, textAlign: 'center' },
   error: { color: colors.danger, fontSize: 13, lineHeight: 19, textAlign: 'center' },
+  demoSection: { borderTopColor: colors.border, borderTopWidth: 1, gap: spacing.sm, paddingTop: spacing.md },
+  demoLabel: { color: colors.textMuted, fontSize: 11, fontWeight: '800', letterSpacing: 0.8, textAlign: 'center' },
+  demoButton: { alignItems: 'center', borderColor: colors.primary, borderRadius: radius.sm, borderWidth: 1, minHeight: 48, justifyContent: 'center' },
+  demoButtonText: { color: colors.primary, fontSize: 15, fontWeight: '800' },
 });
