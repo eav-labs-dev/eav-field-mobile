@@ -1,0 +1,47 @@
+{
+  "expo": {
+    "name": "EAV Field",
+    "slug": "eav-field-mobile",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "eavfield",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "dev.eavlabs.field",
+      "buildNumber": "1",
+      "config": {
+        "usesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "dev.eavlabs.field",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "backgroundColor": "#E9F4EE"
+      },
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-sqlite",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow EAV Field to attach existing photos to inspection drafts.",
+          "cameraPermission": "Allow EAV Field to take photos for inspection evidence.",
+          "microphonePermission": false
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
