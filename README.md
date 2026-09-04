@@ -4,7 +4,7 @@ Expo React Native application for field inspections, offline reporting, and reli
 
 ## Project status
 
-EAV Field's MVP is implemented on `dev` and is being prepared for its release review. It includes API-backed sign-in, secure native session storage, cached assignments, an offline inspection form, durable photo evidence, a manual upload queue, and CI coverage.
+Stage 1 of the EAV Field MVP is complete. The repository demonstrates secure API-backed session boundaries, an explicit offline portfolio demo, cached assignments, offline inspection drafts, durable photo evidence, a manual upload queue, and automated verification.
 
 ## Problem
 
@@ -21,7 +21,7 @@ Field teams often work where connectivity is unreliable. Inspection records must
 - Authenticated assignment downloads with an atomic SQLite offline cache
 - Offline-draft and synchronization status interface
 - Versioned SQLite schema and bound-parameter draft repository
-- Inspection detail route with a two-section offline form
+- Inspection detail route with a multi-section offline form
 - Debounced draft autosave, recovery, and completion progress
 - Camera and photo-library attachments copied into durable device storage
 - Explicit upload queue with guarded transitions, failure metadata, and manual retry
@@ -33,11 +33,11 @@ Field teams often work where connectivity is unreliable. Inspection records must
 - GitHub Actions type-check and test workflow
 - Validated Expo configuration and EAS preview/production build profiles
 
-## Release evidence still required
+## Stage 1 evidence
 
-- Android and iOS device screenshots
-- A recorded run of the documented demo walkthrough
-- Physical-device verification against the intended API environment
+- The offline demo workflow has been verified and captured on a physical iPhone.
+- The screenshots below contain fictional portfolio data.
+- Android visual verification and live Field API integration remain outside the Stage 1 demo claim.
 
 ## Stack
 
@@ -99,14 +99,23 @@ Set `EXPO_PUBLIC_DEMO_MODE=true` only for a labelled portfolio demonstration. It
 
 ## Screenshots and demo
 
-The repository does not include fabricated device captures. Follow the [reviewer demo walkthrough](docs/demo.md) to create sanitized Android and iOS evidence under `docs/screenshots/` before the release PR.
+These are unedited iOS captures of the opt-in offline demo. See the [reviewer walkthrough](docs/demo.md) for the reproducible flow.
+
+| Login and explicit demo entry | Dashboard | Assignments |
+|---|---|---|
+| <img src="docs/assets/screenshots/01-login.png" alt="EAV Field login and offline demo entry on iOS" width="240"> | <img src="docs/assets/screenshots/02-dashboard.png" alt="EAV Field assignment dashboard on iOS" width="240"> | <img src="docs/assets/screenshots/03-assignments.png" alt="EAV Field assignment list on iOS" width="240"> |
+
+| Offline inspection form | Photo evidence | Sync centre | Settings |
+|---|---|---|---|
+| <img src="docs/assets/screenshots/04-inspection-form.png" alt="Offline inspection form on iOS" width="210"> | <img src="docs/assets/screenshots/05-photo-evidence.png" alt="Inspection photo evidence controls on iOS" width="210"> | <img src="docs/assets/screenshots/06-sync-centre.png" alt="Local synchronization queue on iOS" width="210"> | <img src="docs/assets/screenshots/07-settings.png" alt="EAV Field settings on iOS" width="210"> |
 
 ## Known limitations
 
 - Synchronization is user-initiated; the MVP does not run a background connectivity worker.
 - The API contract does not yet expose a conflict response and the client does not attempt automatic conflict resolution.
 - Remote EAS builds require a maintainer to link the intended Expo project and provide signing credentials.
-- Store submission, production usage, and physical-device verification are not claimed by this repository.
+- Store submission, production usage, and physical-device verification against a live Field API are not claimed by this repository.
+- Stage 1 visual evidence is iOS-only; Android uses the same Expo codebase but has not been visually certified here.
 
 ## Structure
 
@@ -120,7 +129,6 @@ docs/                        Architecture, roadmap, and project notes
 
 ## Documentation
 
-- [Project brief](docs/project-brief.md)
 - [Architecture](docs/architecture.md)
 - [API synchronization contract](docs/api-sync.md)
 - [Authentication contract](docs/authentication.md)

@@ -27,9 +27,9 @@
 - [x] Add explicit queue transitions, failure metadata, and manual retry.
 - [x] Recover interrupted in-flight uploads during database initialization.
 
-## Completed MVP — portfolio release foundation
+## Completed Stage 1 — portfolio release foundation
 
-- [ ] Capture Android and iOS screenshots.
+- [x] Capture and document the Stage 1 workflow on iOS.
 - [x] Add a reviewer demo walkthrough and evidence checklist.
 - [x] Validate Expo configuration and document EAS preview and production builds.
 - [ ] Promote the tested MVP from `dev` to `main`.
@@ -40,3 +40,4 @@
 - Add connectivity-aware background synchronization.
 - Add device-level end-to-end coverage for the primary inspection workflow.
 - Reconcile server attachments orphaned by an interrupted multi-step upload.
+- Capture and verify the workflow on Android.

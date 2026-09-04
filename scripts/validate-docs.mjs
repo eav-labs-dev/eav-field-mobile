@@ -13,10 +13,22 @@ const requiredFiles = [
   'docs/release.md',
   'docs/roadmap.md',
 ];
+const screenshotFiles = [
+  'docs/assets/screenshots/01-login.png',
+  'docs/assets/screenshots/02-dashboard.png',
+  'docs/assets/screenshots/03-assignments.png',
+  'docs/assets/screenshots/04-inspection-form.png',
+  'docs/assets/screenshots/05-photo-evidence.png',
+  'docs/assets/screenshots/06-sync-centre.png',
+  'docs/assets/screenshots/07-settings.png',
+];
 
 const failures = [];
 for (const file of requiredFiles) {
   if (!existsSync(resolve(root, file))) failures.push(`Missing required documentation: ${file}`);
+}
+for (const file of screenshotFiles) {
+  if (!existsSync(resolve(root, file))) failures.push(`Missing Stage 1 screenshot: ${file}`);
 }
 
 const readme = readFileSync(resolve(root, 'README.md'), 'utf8');
@@ -45,4 +57,6 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-console.log(`Documentation contract verified (${requiredFiles.length} required files).`);
+console.log(
+  `Documentation contract verified (${requiredFiles.length} required files, ${screenshotFiles.length} screenshots).`,
+);

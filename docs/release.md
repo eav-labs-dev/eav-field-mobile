@@ -38,7 +38,7 @@ The production profile is configuration-ready, but a store release is not automa
 
 1. merge the approved Field PR sequence into `dev`;
 2. verify the complete offline inspection and synchronization flow on physical devices;
-3. capture reviewer screenshots and the demo walkthrough;
+3. verify the committed iOS screenshots and repeat the demo walkthrough for any materially changed UI;
 4. promote a tested release candidate from `dev` to `main`;
 5. confirm store metadata, privacy disclosures, signing ownership, and the production API URL.
 

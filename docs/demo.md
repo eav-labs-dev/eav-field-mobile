@@ -6,7 +6,7 @@ This walkthrough gives reviewers a repeatable way to evaluate the offline inspec
 
 1. Follow the local setup in the README and copy `.env.example` to `.env`.
 2. Set `EXPO_PUBLIC_DEMO_MODE=true` in `.env` to use the deterministic portfolio assignments. The checked-in example defaults to `false` so fictional data cannot appear accidentally.
-3. Start the app with `npm start` and open an Android emulator or iOS simulator.
+3. Start the app with `npm start` and open an iOS device or simulator.
 4. Choose “Explore offline demo”. Alternatively, use a non-production API account when a compatible Field backend is available.
 
 Before recording evidence, run:
@@ -37,15 +37,18 @@ npm run docs:check
 
 ## Evidence checklist
 
-- [ ] Android dashboard and workload summary
-- [ ] Android inspection form with saved-offline state
-- [ ] Android photo attachment preview
-- [ ] Android Sync centre with retry state
-- [ ] iOS equivalents or a clearly labelled platform limitation
-- [ ] Short screen recording of the primary walkthrough
-- [ ] CI link showing clean install, type-check, configuration validation, tests, and documentation validation
+Stage 1 is documented with physical-iPhone screenshots. Android visual verification is intentionally deferred and is not implied by these captures.
 
-Store approved images under `docs/screenshots/android` and `docs/screenshots/ios`. Do not commit real credentials, customer information, faces, location metadata, or production inspection evidence.
+| Step | Evidence |
+|---|---|
+| Explicit demo entry | [Login](assets/screenshots/01-login.png) |
+| Offline workload | [Dashboard](assets/screenshots/02-dashboard.png) and [assignments](assets/screenshots/03-assignments.png) |
+| Draft capture | [Inspection form](assets/screenshots/04-inspection-form.png) |
+| Photo workflow | [Photo evidence](assets/screenshots/05-photo-evidence.png) |
+| Manual synchronization | [Sync centre](assets/screenshots/06-sync-centre.png) |
+| Session and environment | [Settings](assets/screenshots/07-settings.png) |
+
+Do not add captures containing real credentials, customer information, faces, location metadata, or production inspection evidence.
 
 ## Honest demo boundaries
 

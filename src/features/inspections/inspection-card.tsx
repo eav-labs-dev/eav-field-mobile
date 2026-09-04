@@ -2,6 +2,7 @@
  * @fileoverview Summary card for a field inspection assignment.
  */
 
+import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors, radius, spacing } from '@/src/shared/theme/tokens';
@@ -33,7 +34,10 @@ export const InspectionCard = ({ inspection, onPress }: InspectionCardProps) => 
         {statusLabels[inspection.status]}
       </Text>
     </View>
-    <Text style={styles.siteName}>{inspection.siteName}</Text>
+    <View style={styles.siteRow}>
+      <Text style={styles.siteName}>{inspection.siteName}</Text>
+      <Ionicons color={colors.textMuted} name="chevron-forward" size={18} />
+    </View>
     <Text style={styles.meta}>{inspection.location}</Text>
     <Text style={styles.meta}>{inspection.dueLabel}</Text>
     <View style={styles.progressTrack}>
@@ -49,7 +53,8 @@ const styles = StyleSheet.create({
   reference: { color: colors.primary, fontSize: 12, fontWeight: '800', letterSpacing: 0.8 },
   status: { backgroundColor: colors.surfaceMuted, borderRadius: 99, color: colors.primary, fontSize: 12, fontWeight: '700', overflow: 'hidden', paddingHorizontal: 10, paddingVertical: 5 },
   draftStatus: { color: colors.warning },
-  siteName: { color: colors.text, fontSize: 17, fontWeight: '800', marginTop: spacing.xs },
+  siteRow: { alignItems: 'center', flexDirection: 'row', gap: spacing.sm, marginTop: spacing.xs },
+  siteName: { color: colors.text, flex: 1, fontSize: 17, fontWeight: '800' },
   meta: { color: colors.textMuted, fontSize: 13 },
   progressTrack: { backgroundColor: colors.border, borderRadius: 99, height: 5, marginTop: spacing.sm, overflow: 'hidden' },
   progressFill: { backgroundColor: colors.accent, height: '100%' },
