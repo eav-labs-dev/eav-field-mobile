@@ -23,6 +23,8 @@
 - Reconciled MVP, post-MVP, screenshot, and remote-build limitations across the release documentation.
 - Added an explicit opt-in offline demo session so reviewers can exercise local workflows without a deployed Field API.
 - Added accessible filled/outline tab icons, a clearer active-tab treatment, and assignment-card affordances.
+- Kept bottom-tab navigation visible throughout inspection detail workflows with a nested tab-owned stack.
+- Added physical-iPhone Stage 1 screenshots and consolidated the reviewer documentation.
 
 ## 0.1.0 - Portfolio Rebuild Started
 

@@ -22,7 +22,7 @@ Expo SQLite                 Remote API
 
 - `app/(auth)` contains authentication screens.
 - `app/(tabs)` contains the main field-operation navigation.
-- `app/inspections` contains assignment detail and offline form workflows.
+- `app/(tabs)/inspections` contains a nested list/detail stack, keeping the bottom navigation available throughout an inspection workflow.
 
 ## Feature boundaries
 
