@@ -4,7 +4,43 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 10
+      interval: "monthly"
+
+    open-pull-requests-limit: 5
+
     labels:
       - "dependencies"
+
+    groups:
+      expo:
+        patterns:
+          - "expo"
+          - "expo-*"
+          - "@expo/*"
+
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "react-native"
+          - "react-native-*"
+
+      tooling:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+
+      npm-transitive:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+        exclude-patterns:
+          - "expo"
+          - "expo-*"
+          - "@expo/*"
+          - "react"
+          - "react-dom"
+          - "react-native"
+          - "react-native-*"
